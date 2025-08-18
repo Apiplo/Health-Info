@@ -47,4 +47,4 @@ To stop the development server, press Ctrl + C in the terminal.
 
 Directory for Admin Inter: src/Components/Admin.js
 
-To reach admin page, on your local device go to: http://localhost:3000
+To reach admin page, on your local device go to: http://localhost:3000/Admin
