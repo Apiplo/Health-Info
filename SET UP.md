@@ -10,7 +10,8 @@
 ## Prequisite
 
 - Node.js version 24.6 (latest)
-Check your Node.js version
+  
+- To Check your Node.js version
 ```bash
 node -v
 ```
@@ -49,3 +50,4 @@ To stop the development server, press Ctrl + C in the terminal.
 Directory for Admin Inter: src/Components/Admin.js
 
 To reach admin page, on your local device go to: http://localhost:3000/Admin
+
