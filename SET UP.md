@@ -11,13 +11,13 @@
 
 - Node.js version 24.6 (latest)
 Check your Node.js version
-'''
+```bash
 node -v
-'''
+```
 
-'''
+```bash
 npm-v
-'''
+```
 
 ## Installation
 
@@ -28,14 +28,15 @@ npm-v
 ## Commands
 
 Install dependencies
-'''
+```bash
 npm install
-'''
-
+```
+```bash
 Run the program
-'''
+```
+```bash
 npm start
-'''
+```
 
 ## Notes
 
