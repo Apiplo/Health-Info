@@ -1,0 +1,6 @@
+/*
+  This file is for styles specific to the Home component.
+  The previous self-import '@import url('../Home.css');' was removed as it was causing a circular dependency.
+*/
+
+
