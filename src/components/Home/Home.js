@@ -206,7 +206,7 @@ const Home = () => {
             <div className="promo-ad">
               <div className="promo-ad-image">
                 <img
-                  src="https://images.unsplash.com/photo-1511174511562-5f7f18b874f8?w=800&q=80&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1511174511562-5f7f18b874f8?w=400&q=80&auto=format&fit=crop"
                   alt="Comprehensive Cardiac Checkup"
                 />
               </div>
