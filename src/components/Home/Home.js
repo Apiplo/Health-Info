@@ -137,7 +137,7 @@ const Home = () => {
                   <span>{featuredItem?.author || 'Daniel'}</span>
                 </div>
                 <div className="audio-player">
-                  <button className="play-button">▶</button>
+                  <button className="play-button">🎧</button>
                   <span>Play Audio {featuredItem?.audioDuration || '4:01'}</span>
                   <span>🎤</span>
                   <span>▼</span>
@@ -200,25 +200,7 @@ const Home = () => {
       </MainContent>
 
             {/* Advertisement Column */}
-      <AdColumn>
-        <div className="phone-mockup">
-          <div className="phone-screen">
-            <div className="promo-ad">
-              <div className="promo-ad-image">
-                <img
-                  src="https://images.unsplash.com/photo-1511174511562-5f7f18b874f8?w=400&q=80&auto=format&fit=crop"
-                  alt="Comprehensive Cardiac Checkup"
-                />
-              </div>
-              <div className="promo-ad-body">
-                <div className="promo-ad-title">Comprehensive Cardiac Checkup</div>
-                <div className="promo-ad-desc">Save 30% this month. Schedule a preventive heart screening and take control of your health.</div>
-                <a className="promo-ad-cta" href="/register">Sign up now</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </AdColumn>
+
     </HomeContainer>
   );
 };
