@@ -1,6 +1,6 @@
 /* Main container for the article detail page */
 .article-detail-container { 
-  max-width: 1200px; 
+  max-width: 1400px; 
   margin: 0 auto; 
   padding: 2rem; 
   display: flex; 
@@ -16,7 +16,7 @@
 
 /* Ad Column Sidebar */
 .ad-column-sidebar {
-  width: 350px;
+  width: 550px;
   flex-shrink: 0;
   position: sticky;
   top: 2rem;
@@ -96,7 +96,7 @@
 
 
 /* Main text content of the article */
-.article-text { color: #333; line-height: 1.8; font-size: 1.1rem; width: 100%; display: block; }
+.article-text { color: #333; line-height: 1.8; font-size: 1.25rem; width: 100%; display: block; }
 .article-text p { margin-bottom: 1.5rem; }
 @media (max-width: 768px) { .article-text { font-size: 1rem; } .article-text p { margin-bottom: 1rem; } }
 

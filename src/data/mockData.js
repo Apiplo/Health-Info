@@ -3,21 +3,21 @@ export const mockHealthNews = [
     id: 1,
     title: "What Are the Health Benefits of Laughter?",
     description: "Whether you're watching a comedy special, sharing a joke with a friend, or laughing at your own mistakes, the simple act of laughing can provide meaningful health benefits that go far beyond the moment.",
-    image: "IMG",
+    image: "https://images.unsplash.com/photo-1549576490-b0b4831ef60a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
     category: "Mental Health"
   },
   {
     id: 2,
     title: "New Study Shows Benefits of Mediterranean Diet",
     description: "Research confirms that following a Mediterranean diet rich in olive oil, nuts, fish, and vegetables can significantly reduce the risk of heart disease and improve overall longevity.",
-    image: "IMG",
+    image: "https://images.unsplash.com/photo-1541014741259-de529411b96a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
     category: "Nutrition"
   },
   {
     id: 3,
     title: "Exercise and Mental Health: The Connection",
     description: "Regular physical activity has been shown to reduce symptoms of depression and anxiety, improve mood, and enhance cognitive function across all age groups.",
-    image: "IMG",
+    image: "https://images.unsplash.com/photo-1538805060514-97d9cc17730c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
     category: "Fitness"
   }
 ];
@@ -25,23 +25,23 @@ export const mockHealthNews = [
 export const mockLivingStyle = [
   {
     id: 4,
-    title: "What Are the Health Benefits of Laughter?",
-    description: "Whether you're watching a comedy special, sharing a joke with a friend, or laughing at your own mistakes, the simple act of laughing can provide meaningful health benefits that go far beyond the moment.",
-    image: "IMG",
+    title: "The Art of Mindful Living",
+    description: "Discover how incorporating mindfulness into your daily routine can transform your relationship with yourself and others, leading to a more peaceful and fulfilling life.",
+    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1399&q=80",
     category: "Lifestyle"
   },
   {
     id: 5,
     title: "Mindfulness Practices for Daily Life",
     description: "Incorporating mindfulness techniques into your daily routine can reduce stress, improve focus, and enhance overall well-being through simple breathing exercises and meditation.",
-    image: "IMG",
+    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1399&q=80",
     category: "Wellness"
   },
   {
     id: 6,
     title: "Sleep Hygiene: Tips for Better Rest",
     description: "Quality sleep is essential for health. Learn about creating the perfect sleep environment, establishing routines, and avoiding common sleep disruptors for optimal rest.",
-    image: "IMG",
+    image: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
     category: "Sleep"
   }
 ];
