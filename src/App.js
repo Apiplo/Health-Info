@@ -8,6 +8,9 @@ import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import Home from './components/Home/Home';
 import ArticleDetail from './components/ArticleDetail/ArticleDetail';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import HealthPage from './components/HealthPage/HealthPage';
+import TechnologyPage from './components/TechnologyPage/TechnologyPage';
+import SportPage from './components/SportPage/SportPage';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -36,6 +39,9 @@ function AppContent() {
             <ArticleDetail />
           </ProtectedRoute>
         } />
+        <Route path="/health" element={<HealthPage />} />
+        <Route path="/technology" element={<TechnologyPage />} />
+        <Route path="/sport" element={<SportPage />} /> 
       </Routes>
     </AppContainer>
   );

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { fetchFeaturedArticles } from '../../services/api';
 import { mockHealthNews, mockLivingStyle } from '../../data/mockData';
-import './Home.css';
+import './TechnologyPage.css';
 
 // Styled component for the main container of the home page
 const HomeContainer = styled.div`
@@ -52,51 +52,39 @@ const AdColumn = styled.div`
   }
 `;
 
-// Get top articles from each category
-const topHealthArticles = [...mockHealthNews]
-  .sort(() => 0.5 - Math.random())
-  .slice(0, 3);
-
-const topSportArticles = [
-  {
-    id: 'sport1',
-    title: "2024 Olympics: New Records and Rising Stars",
-    description: "A look at the most impressive performances and emerging talents from this year's Olympic Games.",
-    image: "https://images.unsplash.com/photo-1530137073521-1e009ca9ce1f?w=800&auto=format&fit=crop&q=80",
-    category: "Olympics"
-  },
-  {
-    id: 'sport2',
-    title: "The Science of Athletic Performance",
-    description: "How modern training techniques and sports science are helping athletes break performance barriers.",
-    image: "https://images.unsplash.com/photo-1579952363872-3f11122591b2?w=800&auto=format&fit=crop&q=80",
-    category: "Training"
-  }
-];
-
-const topTechArticles = [
+// Mock technology articles
+const mockTechNews = [
   {
     id: 'tech1',
     title: "The Future of AI: What's Next in 2024",
     description: "Exploring the latest advancements in artificial intelligence and how they're shaping our future.",
     image: "https://images.unsplash.com/photo-1677442135136-760c813d8a43?w=800&auto=format&fit=crop&q=80",
-    category: "AI"
+    category: "Artificial Intelligence"
   },
   {
     id: 'tech2',
     title: "Quantum Computing Breakthroughs",
     description: "How quantum computing is solving problems that were previously thought to be unsolvable.",
     image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&auto=format&fit=crop&q=80",
-    category: "Tech"
+    category: "Quantum Computing"
+  },
+  {
+    id: 'tech3',
+    title: "The Rise of Web3 and Decentralization",
+    description: "Understanding the shift towards decentralized internet and its implications for the future of the web.",
+    image: "https://images.unsplash.com/photo-1639762681057-408e52192e55?w=800&auto=format&fit=crop&q=80",
+    category: "Web3"
+  },
+  {
+    id: 'tech4',
+    title: "Sustainable Tech: Building a Greener Future",
+    description: "How technology is being used to combat climate change and promote sustainability.",
+    image: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&auto=format&fit=crop&q=80",
+    category: "Green Technology"
   }
 ];
 
-// Combine and shuffle the articles
-const mostPopularArticles = [
-  ...topHealthArticles,
-  ...topSportArticles,
-  ...topTechArticles
-].sort(() => 0.5 - Math.random()); // Shuffle the array for variety
+const techArticles = [...mockTechNews].slice(0, 7);
 
 // Home component definition
 const Home = () => {
@@ -108,9 +96,9 @@ const Home = () => {
       <MainContent>
         {/* Most Popular Section */}
         <div className="news-section">
-          <h2 className="section-title">Most Popular</h2>
+          <h2 className="section-title">Technology & Innovation</h2>
           <div className="vertical-article-list">
-            {mostPopularArticles.map((article, index) => (
+            {techArticles.map((article, index) => (
               <div key={article.id} className="vertical-article-item">
                 <span className="article-number">{String(index + 1).padStart(2, '0')}</span>
                 <Link 

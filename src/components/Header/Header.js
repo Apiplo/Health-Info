@@ -65,9 +65,9 @@ const Header = () => {
 
       {isMobileMenuOpen && (
         <div className="mobile-menu">
-          <Link className="nav-button" to="/disease">Disease</Link>
-          <Link className="nav-button" to="/trendings">Trendings</Link>
-          <Link className="nav-button" to="/style">Style</Link>
+          <Link className="nav-button" to="/health">Disease</Link>
+          <Link className="nav-button" to="/technology">Trendings</Link>
+          <Link className="nav-button" to="/sport">Style</Link>
           <Link className="auth-button" to="/login">Login</Link>
           <Link className="auth-button sign-up-button" to="/register">Sign Up</Link>
         </div>
