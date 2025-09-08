@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { fetchFeaturedArticles } from '../../services/api';
 import { mockHealthNews, mockLivingStyle } from '../../data/mockData';
 import './HealthPage.css';
+import '../Home/Home.css';
 
 // Styled component for the main container of the home page
 const HomeContainer = styled.div`
@@ -74,9 +75,9 @@ const Home = () => {
         {/* Most Popular Section */}
         <div className="news-section">
           <h2 className="section-title">Health & Wellness</h2>
-          <div className="vertical-article-list">
+      <div className="vertical-article-list">
             {healthArticles.map((article, index) => (
-              <div key={article.id} className="vertical-article-item">
+        <div key={article.id} className="vertical-article-item card">
                 <span className="article-number">{String(index + 1).padStart(2, '0')}</span>
                 <Link 
                   to={`/article/${article.id}`} 

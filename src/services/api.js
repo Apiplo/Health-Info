@@ -31,10 +31,8 @@ export async function loginApi(username, password) {
  */
 export async function fetchFeaturedArticles() {
   await delay(400);
-  return mockFeaturedArticles.map((a) => ({
-    youtubeId: a.youtubeId || 'dQw4w9WgXcQ',
-    ...a,
-  }));
+  // Preserve original data; do not inject default youtubeId
+  return mockFeaturedArticles;
 }
 
 // Mock: list of ad videos for right column (title + youtubeId)
@@ -95,6 +93,71 @@ const videoArticlesById = {
     image: 'Image/Video',
     content:
       "Strong cardiovascular health is built through repeatable daily choices. Focus first on the habits with the biggest impact: moving your body, eating whole foods, and sleeping enough. None of these require perfection—only consistency.\n\nA simple weekly plan can help: schedule brisk walks (or light cycling) on five days, swap refined snacks for fruit or nuts, and aim for a steady bedtime that gives you 7–9 hours. Track these habits for two weeks and you’ll likely notice better energy and mood.\n\nWhy it matters: small lifestyle upgrades improve blood pressure, insulin sensitivity, and cholesterol over time. Combine movement with high‑fiber meals and you’ll support your heart from multiple angles. Start today with one habit you can keep for seven days.",
+  },
+  // Tech list items
+  tech1: {
+    id: 'tech1',
+    title: "The Future of AI: What's Next in 2024",
+    author: 'Editorial Team',
+  youtubeId: 'dQw4w9WgXcQ',
+    image: 'Image/Video',
+    content:
+      "AI continues to evolve rapidly with breakthroughs in multimodal models, agent workflows, and on-device inference. This article explores where the next 12 months might take us and how to prepare your stack.",
+  },
+  tech2: {
+    id: 'tech2',
+    title: 'Quantum Computing Breakthroughs',
+    author: 'Editorial Team',
+  youtubeId: 'ysz5S6PUM-U',
+    image: 'Image/Video',
+    content:
+      "Quantum hardware is scaling qubits and reducing error rates. We unpack what these milestones mean for chemistry, optimization, and cryptography use cases.",
+  },
+  tech3: {
+    id: 'tech3',
+    title: 'The Rise of Web3 and Decentralization',
+    author: 'Editorial Team',
+  youtubeId: 'kO1i2iLzO_c',
+    image: 'Image/Video',
+    content:
+      "Decentralized primitives are moving beyond speculation toward consumer and enterprise utility. Here are pragmatic lenses to evaluate projects in 2024.",
+  },
+  tech4: {
+    id: 'tech4',
+    title: 'Sustainable Tech: Building a Greener Future',
+    author: 'Editorial Team',
+  youtubeId: 'C0DPdy98e4c',
+    image: 'Image/Video',
+    content:
+      "From energy-efficient chips to carbon-aware scheduling, we explore the practical steps the industry is taking to reduce its footprint.",
+  },
+  // Sport list items
+  sport1: {
+    id: 'sport1',
+    title: '2024 Olympics: New Records and Rising Stars',
+    author: 'Sports Desk',
+  youtubeId: 'ysz5S6PUM-U',
+    image: 'Image/Video',
+    content:
+      "A roundup of standout performances, training philosophies, and narratives that defined the games.",
+  },
+  sport2: {
+    id: 'sport2',
+    title: 'The Science of Athletic Performance',
+    author: 'Sports Desk',
+  youtubeId: 'kO1i2iLzO_c',
+    image: 'Image/Video',
+    content:
+      "How biomechanics, recovery protocols, and data analytics are changing the way athletes train and compete.",
+  },
+  sport3: {
+    id: 'sport3',
+    title: 'Football Transfers: Summer 2024 Roundup',
+    author: 'Sports Desk',
+  youtubeId: 'C0DPdy98e4c',
+    image: 'Image/Video',
+    content:
+      "The biggest moves, tactical fits, and what they signal for the coming season across major leagues.",
   },
   ad2: {
     id: 'ad2',
@@ -166,14 +229,15 @@ export async function fetchArticleById(id) {
   if (!found) throw new Error('Article not found');
   // Ensure required fields exist for detail page
   return {
+    ...found,
     author: found.author || 'Daniel',
     audioDuration: found.audioDuration || '4:01',
     content:
       found.content ||
       `${found.description || ''}\n\nThis is extended mock content for the article "${found.title}" to simulate a realistic detail page per Figma.`,
     image: found.image || 'Image/Video',
-    youtubeId: found.youtubeId || 'dQw4w9WgXcQ',
-    ...found,
+    // Preserve youtubeId only if provided; do not inject defaults
+    youtubeId: found.youtubeId,
   };
 }
 

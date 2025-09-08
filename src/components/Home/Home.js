@@ -109,14 +109,14 @@ const Home = () => {
         {/* Most Popular Section */}
         <div className="news-section">
           <h2 className="section-title">Most Popular</h2>
-          <div className="vertical-article-list">
+      <div className="vertical-article-list">
             {mostPopularArticles.map((article, index) => (
-              <div key={article.id} className="vertical-article-item">
+        <div key={article.id} className="vertical-article-item card">
                 <span className="article-number">{String(index + 1).padStart(2, '0')}</span>
                 <Link 
                   to={`/article/${article.id}`} 
                   state={article}
-                  className="vertical-article-link"
+          className="vertical-article-link"
                 >
                   <div className="article-thumbnail">
                     <img src={article.image} alt={article.title} />

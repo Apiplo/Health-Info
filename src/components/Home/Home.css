@@ -29,9 +29,8 @@
   display: flex;
   align-items: flex-start;
   gap: 1.5rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid #f0f0f0;
-  transition: background-color 0.2s ease;
+  padding: 1rem;
+  border-bottom: none;
 }
 
 .article-number {
@@ -59,7 +58,6 @@
   border-radius: 10px;
   overflow: hidden;
   background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .article-thumbnail img {
@@ -91,7 +89,7 @@
 }
 
 .vertical-article-item:hover .vertical-article-title {
-  color: #3498db;
+  color: #2d82c4;
 }
 
 .vertical-article-description {
@@ -141,7 +139,7 @@
   
   .vertical-article-item {
     gap: 2rem;
-    padding: 1.25rem 0.5rem;
+    padding: 1rem;
   }
   
   .article-number {
@@ -188,6 +186,6 @@
   }
   
   .vertical-article-item {
-    padding: 1.5rem 0;
+    padding: 1rem;
   }
 }

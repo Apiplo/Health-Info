@@ -4,11 +4,20 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { fetchArticleById } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import './ArticleDetail.css';
+import { videoFallback, extractYouTubeId } from '../../data/config';
 
 // Styles moved to ArticleDetail.css
 
 // Component to display the details of a single article
 const ArticleDetail = () => {
+  // Resolve fallback by category; default when missing
+  const getFallbackId = () => {
+    const cat = String(article?.category || '').toLowerCase();
+    if (cat.includes('health') || cat.includes('wellness') || cat.includes('nutrition')) return extractYouTubeId(videoFallback.health) || videoFallback.default;
+    if (cat.includes('tech')) return extractYouTubeId(videoFallback.technology) || videoFallback.default;
+    if (cat.includes('sport')) return extractYouTubeId(videoFallback.sport) || videoFallback.default;
+    return extractYouTubeId(videoFallback.default) || 'pxwm3sqAytE';
+  };
     // Get the article ID from the URL parameters
   const { id } = useParams();
   const navigate = useNavigate();
@@ -27,16 +36,27 @@ const ArticleDetail = () => {
 
     // useEffect hook to fetch the article data when the component mounts or the ID changes
   useEffect(() => {
-        // Async function to fetch the article from the API
+    // Use state immediately for fast first paint
+    if (location.state && !article) {
+      setArticle(location.state);
+    }
+
+    // Decide whether we need to fetch richer detail (e.g., youtubeId/content)
+    const needsHydration = !location.state || !location.state.youtubeId || !location.state.content;
+
     const loadArticle = async () => {
       try {
+        if (!id || !needsHydration) {
+          setLoading(false);
+          return;
+        }
         const data = await fetchArticleById(id);
         setArticle(data);
       } catch (err) {
-                setError('Failed to load article.'); // Set an error message if the fetch fails
+        setError('Failed to load article.');
         console.error(err);
       } finally {
-                setLoading(false); // Set loading to false once the data is fetched or an error occurs
+        setLoading(false);
       }
     };
 
@@ -109,18 +129,14 @@ const ArticleDetail = () => {
 
                           {/* Media section for displaying YouTube video or a placeholder */}
               <div className="media-section">
-                {article.youtubeId ? (
-                  <div className="youtube-wrapper">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${article.youtubeId}`}
-                      title={article.title || 'YouTube video'}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
-                  </div>
-                ) : (
-                  <div className="media-placeholder">{article.image || 'Image/Video'}</div>
-                )}
+                <div className="youtube-wrapper">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${extractYouTubeId(article.youtubeId) || getFallbackId()}`}
+                    title={article.title || 'YouTube video'}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
               </div>
 
                           {/* Article content section */}

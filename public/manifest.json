@@ -1,0 +1,8 @@
+{
+  "short_name": "HealthInfo",
+  "name": "HealthInfo - Health Information Website",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#1976D2",
+  "background_color": "#ffffff"
+}
