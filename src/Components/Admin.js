@@ -2,13 +2,24 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Box, Button, TextField, Typography, Paper, Table, TableHead,
   TableRow, TableCell, TableBody, Stack, IconButton, Snackbar, Alert,
-  Dialog, DialogTitle, DialogContent, DialogActions
+  Dialog, DialogTitle, DialogContent, DialogActions, TablePagination
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import StarterKit from "@tiptap/starter-kit";
+import { TextStyleKit } from "@tiptap/extension-text-style";
+import { TextAlign } from "@tiptap/extension-text-align";
+import { useEditor } from "@tiptap/react";
+import {
+  MenuButtonBold, MenuButtonItalic,  
+  MenuSelectTextAlign, MenuControlsContainer, RichTextField,
+  RichTextEditorProvider, MenuSelectFontSize, MenuDivider,
+} from "mui-tiptap";
+import axios from "axios"
 
 // Temporary "database"
 const STORAGE_KEY = "demo_articles_v1";
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc1NTc1ODQ2MywiZXhwIjoxNzU1ODQ0ODYzfQ.wXByFB2WsP7obUUKZrr7dg5g1b0ISceQyP0czaADkcg";
 
 // Load saved article from DB
 const loadArticles = () => {
@@ -17,6 +28,7 @@ const loadArticles = () => {
     return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 };
+
 
 // Save articles to DB
 const saveArticles = (rows) => localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
@@ -52,10 +64,11 @@ export default function AdminArticles() {
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   // Submit (add or update article)
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
+    form.content = JSON.parse(JSON.stringify(editor.getJSON()));
     // Validate required fields
-    if (!form.title.trim() || !form.content.trim()) {
+    if (!form.title.trim() || !editor.getText().trim()) {
       return setToast({ open: true, msg: "Title and content are required.", severity: "warning" });
     }
 
@@ -71,23 +84,34 @@ export default function AdminArticles() {
       const newRow = {
         id: uid(),
         title: form.title.trim(),
-        content: form.content.trim(),
+        content: JSON.parse(JSON.stringify(editor.getJSON())),
         image_url: form.image_url.trim() || "",
         created_at: nowISO(),
         updated_at: nowISO(),
       };
+     
       setArticles(prev => [newRow, ...prev]);
       setToast({ open: true, msg: "Article added.", severity: "success" });
+      try {
+        await axios.post("http://localhost:3000/api/articles", form, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+      } catch (err) {
+        console.log(err.response);
+      }
     }
 
     // Reset form after save
     setForm(emptyForm);
+    editor.commands.clearContent();
   };
 
   // Fill forms with existing values
   const startEdit = (row) => {
     setEditingId(row.id);
-    setForm({ title: row.title, content: row.content, image_url: row.image_url || "" });
+    setForm({ title: row.title, content: editor.commands.setContent(row.content), image_url: row.image_url || "" });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -105,10 +129,33 @@ export default function AdminArticles() {
   const cancelEdit = () => {
     setEditingId(null);
     setForm(emptyForm);
+    editor.commands.clearContent();
+  };
+
+  /* Creates an editor for the RichTextField in the form body (allows you to edit
+     what things the editor has like if it can bold etc) */
+  const editor = useEditor({
+    extensions: [StarterKit, TextStyleKit, TextAlign.configure({
+      types: ['heading', 'paragraph'],
+      alignments: ['left', 'center', 'right'],
+      defaultAlignment: ['left'],
+    })],
+    editorProps: {
+      scrollThreshold: 5,
+      scrollMargin: 5,
+    },
+  });
+
+  const handleEditorClickEvent = () => {
+    if (editor && !editor.isFocused) {
+      editor.commands.focus('end')
+    }
   };
 
   return (
+   
     <Box p={{ xs: 2, md: 3 }} maxWidth="1000px" mx="auto">
+
       <Typography variant="h5" mb={2}>Admin • Articles</Typography>
 
       {/* Add / Edit Form */}
@@ -127,15 +174,34 @@ export default function AdminArticles() {
               required
             />
             {/* Content input */}
-            <TextField
-              label="Content"
-              name="content"
-              value={form.content}
-              onChange={onChange}
-              required
-              multiline
-              minRows={5}
-            />
+            <RichTextEditorProvider
+              editor={editor}>
+              <RichTextField
+                controls={ 
+                  <MenuControlsContainer>
+                    <MenuButtonBold />
+                    <MenuButtonItalic />
+                      <MenuDivider />                    
+                    <MenuSelectTextAlign />
+                      <MenuDivider />
+                    <MenuSelectFontSize />
+                  </MenuControlsContainer>
+                }
+                sx={{
+                  maxHeight: "max-content",
+                  minHeight: 750,
+                  maxWidth: "auto",
+                  overflow: "auto",
+                  wordWrap: "break-word",
+                  textWrap: "wrap",
+                  blockSize: 750,
+                }}
+                onClick={handleEditorClickEvent}
+                onChange={onChange}
+                required
+              />
+              
+            </RichTextEditorProvider>
             {/* Image input */}
             <TextField
               label="Image URL (optional)"
@@ -157,7 +223,7 @@ export default function AdminArticles() {
         </Box>
       </Paper>
 
-      {/* Search and clear */}
+{/*      Search and clear
       <Stack direction={{ xs: "column", sm: "row" }} spacing={1} mb={1}>
         <TextField
           size="small"
@@ -179,7 +245,7 @@ export default function AdminArticles() {
         </Button>
       </Stack>
 
-      {/* Article table */}
+     Article table
       <Paper>
         <Table>
           <TableHead>
@@ -197,7 +263,7 @@ export default function AdminArticles() {
                 <TableCell>{new Date(a.created_at).toLocaleString()}</TableCell>
                 <TableCell>{a.image_url ? "Yes" : "—"}</TableCell>
                 <TableCell align="right">
-                    {/* Edit and Delete buttons */}
+                    Edit and Delete buttons
                   <IconButton onClick={() => startEdit(a)} aria-label="edit">
                     <EditIcon />
                   </IconButton>
@@ -217,7 +283,7 @@ export default function AdminArticles() {
           </TableBody>
         </Table>
       </Paper>
-
+*/}
       {/* Delete Confirm */}
       <Dialog open={confirm.open} onClose={() => setConfirm({ open: false, id: null })}>
         <DialogTitle>Delete article?</DialogTitle>
