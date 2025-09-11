@@ -2,7 +2,8 @@ import React from "react";
 import {BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { AppBar, Toolbar, Typography,Box} from '@mui/material';
 import Home from './Components/Home';
-import Admin from './Components/Admin'
+import Admin from './Components/Admin';
+import AdminMain from './Components/AdminMain';
 
 // ErrorBoundary component to handle errors in child components
 class ErrorBoundary extends React.Component {
@@ -104,6 +105,7 @@ export default function App() {
       <Routes>
         <Route path="/" element ={<Home />}/> 
         <Route path="/Admin" element={<Admin />}/>
+        <Route path="/AdminMain" element={<AdminMain />} />
       </Routes>
 
           
