@@ -1,0 +1,33 @@
+# Ignore everything outside this project directory
+../../*
+../*
+!../Health-Info-feature-web-interface-alternative/
+/*/*
+!*
+
+# Dependencies
+/node_modules
+
+# Build directory
+/build
+/dist
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor directories and files
+.vscode/
+.idea/
+.public/
+
+# OS generated files
+.DS_Store
+Thumbs.db
