@@ -2,6 +2,10 @@
 
 A modern, responsive health information website built with React.js featuring login functionality, video upload capabilities, and mobile-responsive design.
 
+## Project Status
+
+This project is now complete and fully functional. All planned features have been implemented, and the application is ready for deployment and use.
+
 ## Features
 
 - **Modern UI Design**: Clean, professional interface with health-focused branding
@@ -10,6 +14,8 @@ A modern, responsive health information website built with React.js featuring lo
 - **Responsive Design**: Mobile-first approach with responsive breakpoints
 - **Mock Data**: Pre-populated content for demonstration purposes
 - **Article Management**: Featured articles and categorized content sections
+- **Audio Translation**: Audio content can be translated into English and Bangla (Bengali).
+- **Article Translation and Narration**: Articles can be translated and read aloud for users who are illiterate.
 
 ## Screenshots
 
