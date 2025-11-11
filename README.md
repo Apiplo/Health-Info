@@ -23,7 +23,18 @@ This project is fully developed and production-ready.
 - **Audio Translation**: Supports English and Bangla
 - **Article Narration**: Translate and read articles aloud
 
+## Deployment 
+**Install dependencies**
+   ```bash
+   npm install
+   ```
+**Start the development server**
+   ```bash
+   npm start
+   ```
 
+**Open your browser**
+   Navigate to `http://localhost:3001`
 
 
 
