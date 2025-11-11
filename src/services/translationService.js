@@ -1,38 +1,53 @@
-// Translation service using Google Translate API
+/**
+ * Translation Service - handles text translation between English and Bangla
+ * Uses Google Translate API for translation with caching for better performance
+ */
 class TranslationService {
   constructor() {
+    // Cache to store translated text and avoid repeated API calls
     this.cache = new Map();
   }
 
-  // Note: We intentionally do NOT load the Google Translate Element script
-  // to avoid any automatic, page-wide translation side effects. All
-  // translation is handled via fetch to the unofficial translate endpoint
-  // and applied only to targeted nodes.
+  /**
+   * Note: This service uses direct API calls to Google Translate
+   * We do NOT use the Google Translate Element widget to avoid automatic
+   * page-wide translation. Instead, we manually translate specific elements.
+   */
 
-  // Fallback translation using fetch API to Google Translate
+  /**
+   * Translate text from one language to another
+   * @param {string} text - Text to translate
+   * @param {string} targetLang - Target language code ('bn' for Bangla, 'en' for English)
+   * @returns {string} - Translated text
+   */
   async translateText(text, targetLang = 'bn') {
     if (!text || text.trim() === '') return text;
 
-    // Check cache first
+    // Check if translation is already cached
     const cacheKey = `${text}_${targetLang}`;
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey);
     }
 
     try {
-      // Using a simple translation API approach
+      // Determine source language (opposite of target)
       const sourceLang = targetLang === 'bn' ? 'en' : 'bn';
+      
+      // Call Google Translate API (unofficial endpoint)
       const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
       
       const response = await fetch(url);
       const result = await response.json();
       
+      // Extract translated text from response
       if (result && result[0] && result[0][0]) {
         const translatedText = result[0][0][0];
+        // Save to cache for future use
         this.cache.set(cacheKey, translatedText);
         return translatedText;
       }
     } catch (error) {
+      // If API fails, use hardcoded fallback translations
       console.warn('Translation failed, using fallback:', error);
       return this.getFallbackTranslation(text, targetLang);
     }
@@ -40,7 +55,13 @@ class TranslationService {
     return text;
   }
 
-  // Fallback translations for common UI elements
+  /**
+   * Fallback translations for common UI elements
+   * Used when API translation fails
+   * @param {string} text - Text to translate
+   * @param {string} targetLang - Target language
+   * @returns {string} - Translated text or original if no match found
+   */
   getFallbackTranslation(text, targetLang) {
     const translations = {
       'en_to_bn': {
@@ -86,42 +107,58 @@ class TranslationService {
     return translations[translationKey][text] || text;
   }
 
-  // Translate all text nodes in a DOM element
+  /**
+   * Translate all text content within a DOM element
+   * @param {HTMLElement} element - DOM element to translate
+   * @param {string} targetLang - Target language code
+   */
   async translateElement(element, targetLang) {
     if (!element) return;
 
+    // Get all text nodes that should be translated
     const textNodes = this.getTextNodes(element);
+    
+    // Translate each text node in parallel
     const promises = textNodes.map(async (node) => {
       const originalText = node.textContent.trim();
       if (originalText && originalText.length > 0) {
         const translatedText = await this.translateText(originalText, targetLang);
+        // Only update if translation is different
         if (translatedText !== originalText) {
           node.textContent = translatedText;
         }
       }
     });
 
+    // Wait for all translations to complete
     await Promise.all(promises);
   }
 
-  // Get all text nodes from an element
+  /**
+   * Get all text nodes from a DOM element
+   * Filters out script tags, style tags, and empty text
+   * @param {HTMLElement} element - DOM element to search
+   * @returns {Array} - Array of text nodes
+   */
   getTextNodes(element) {
     const textNodes = [];
+    
+    // TreeWalker efficiently finds all text nodes in the DOM
     const walker = document.createTreeWalker(
       element,
       NodeFilter.SHOW_TEXT,
       {
         acceptNode: (node) => {
-          // Skip script, style, and other non-visible elements
           const parent = node.parentElement;
           if (!parent) return NodeFilter.FILTER_REJECT;
           
+          // Skip script, style, and noscript tags
           const tagName = parent.tagName.toLowerCase();
           if (['script', 'style', 'noscript'].includes(tagName)) {
             return NodeFilter.FILTER_REJECT;
           }
 
-          // Skip empty or whitespace-only text nodes
+          // Skip empty or whitespace-only text
           if (!node.textContent.trim()) {
             return NodeFilter.FILTER_REJECT;
           }
@@ -131,6 +168,7 @@ class TranslationService {
       }
     );
 
+    // Collect all valid text nodes
     let node;
     while (node = walker.nextNode()) {
       textNodes.push(node);
@@ -139,11 +177,15 @@ class TranslationService {
     return textNodes;
   }
 
-  // Clear translation cache
+  /**
+   * Clear the translation cache
+   * Useful when you want to force fresh translations
+   */
   clearCache() {
+    // Clear the cache to force fresh translations
     this.cache.clear();
   }
 }
 
-// Export singleton instance
+// Create and export a single instance of the translation service
 export const translationService = new TranslationService();

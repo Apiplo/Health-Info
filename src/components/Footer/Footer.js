@@ -1,11 +1,14 @@
+// Import React and footer styles
 import React from 'react';
 import './Footer.css';
 
+// Footer component - displays site footer with social links, company info, and contact details
 const Footer = () => {
+  // Get current year for copyright notice
   const year = new Date().getFullYear();
   return (
     <footer className="app-footer">
-      {/* Social bar */}
+      {/* Top section: Social media links bar */}
       <div className="footer-social">
         <div className="footer-container">
           <span className="social-text">Get connected with us on social networks!</span>
@@ -26,9 +29,10 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Main content */}
+      {/* Middle section: Main footer content with 4 columns */}
       <div className="footer-main">
         <div className="footer-container footer-grid">
+          {/* Column 1: Company information */}
           <div className="footer-col">
             <h4>Company</h4>
             <p>
@@ -36,6 +40,7 @@ const Footer = () => {
               and how we promote accessible health information.
             </p>
           </div>
+          {/* Column 2: Products and services */}
           <div className="footer-col">
             <h4>Products</h4>
             <ul>
@@ -45,6 +50,7 @@ const Footer = () => {
               <li><a href="#">For Clinics</a></li>
             </ul>
           </div>
+          {/* Column 3: Useful links for users */}
           <div className="footer-col">
             <h4>Useful Links</h4>
             <ul>
@@ -54,6 +60,7 @@ const Footer = () => {
               <li><a href="#">Help</a></li>
             </ul>
           </div>
+          {/* Column 4: Contact information */}
           <div className="footer-col">
             <h4>Contact</h4>
             <ul className="contact-list">
@@ -66,7 +73,7 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Bottom bar */}
+      {/* Bottom section: Copyright notice */}
       <div className="footer-bottom">
         <div className="footer-container">
           <span>© {year} Health Info. All rights reserved.</span>

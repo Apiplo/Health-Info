@@ -26,7 +26,7 @@ const Header = () => {
   return (
     <header className="header-container" ref={headerRef}>
       <div className="header-content">
-        <Link to="/" className="logo">HealthInfo</Link>
+        <Link to="/" className="logo">BlogInfo</Link>
 
         <div className="nav-section">
           <Link className="nav-button" to="/health">Health</Link>

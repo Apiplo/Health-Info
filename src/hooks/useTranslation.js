@@ -2,13 +2,21 @@ import { useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { translationService } from '../services/translationService';
 
-// Custom hook for handling translation of components
-// Optionally pass a dependency array to re-run translation when content changes
+/**
+ * Custom hook for translating component content between English and Bangla
+ * 
+ * Usage: Attach the returned ref to the element you want to translate
+ * Example: const ref = useTranslation(); return <div ref={ref}>Content</div>
+ * 
+ * @param {Array} deps - Optional dependency array to re-run translation when content changes
+ * @returns {React.RefObject} - Ref to attach to the element to be translated
+ */
 export const useTranslation = (deps = []) => {
   const { currentLanguage, setIsTranslating } = useLanguage();
-  const elementRef = useRef(null);
-  const originalContent = useRef(new Map());
+  const elementRef = useRef(null); // Reference to the DOM element to translate
+  const originalContent = useRef(new Map()); // Store original English text for restoration
 
+  // Effect runs whenever language changes or dependencies update
   useEffect(() => {
     const translateContent = async () => {
       if (!elementRef.current) return;
@@ -16,15 +24,15 @@ export const useTranslation = (deps = []) => {
       setIsTranslating(true);
       try {
         if (currentLanguage === 'en') {
-          // When in English, restore any previous translation and refresh originals
+          // Switching to English: restore original content
           restoreOriginalContent(elementRef.current);
           storeOriginalContent(elementRef.current, { reset: true });
         } else {
-          // Ensure originals are stored before translating if not already
+          // Switching to Bangla: save original English first if not saved
           if (originalContent.current.size === 0) {
             storeOriginalContent(elementRef.current, { reset: true });
           }
-          // Translate to Bangla
+          // Translate all text to Bangla
           await translationService.translateElement(elementRef.current, 'bn');
         }
       } catch (error) {
@@ -34,23 +42,27 @@ export const useTranslation = (deps = []) => {
       }
     };
 
-    // Add small delay to ensure DOM is ready
+    // Small delay to ensure DOM is fully rendered before translating
     const timeoutId = setTimeout(translateContent, 100);
     return () => clearTimeout(timeoutId);
   }, [currentLanguage, setIsTranslating, ...deps]);
 
+  // Store original English text before translation
   const storeOriginalContent = (element, { reset } = { reset: false }) => {
     if (reset) {
       originalContent.current.clear();
     }
     const textNodes = getTextNodes(element);
+    // Save each text node's content with its index as key
     textNodes.forEach((node, index) => {
       originalContent.current.set(index, node.textContent);
     });
   };
 
+  // Restore original English text from stored values
   const restoreOriginalContent = (element) => {
     const textNodes = getTextNodes(element);
+    // Replace each text node with its saved original content
     textNodes.forEach((node, index) => {
       const originalText = originalContent.current.get(index);
       if (originalText !== undefined) {
@@ -59,8 +71,13 @@ export const useTranslation = (deps = []) => {
     });
   };
 
+  /**
+   * Get all text nodes from an element that should be translated
+   * Filters out script tags, style tags, and elements marked with data-no-translate
+   */
   const getTextNodes = (element) => {
     const textNodes = [];
+    // TreeWalker efficiently traverses DOM to find text nodes
     const walker = document.createTreeWalker(
       element,
       NodeFilter.SHOW_TEXT,
@@ -69,12 +86,13 @@ export const useTranslation = (deps = []) => {
           const parent = node.parentElement;
           if (!parent) return NodeFilter.FILTER_REJECT;
           
+          // Skip script, style, and noscript tags
           const tagName = parent.tagName.toLowerCase();
           if (['script', 'style', 'noscript'].includes(tagName)) {
             return NodeFilter.FILTER_REJECT;
           }
 
-          // Skip nodes inside containers explicitly marked to avoid translation
+          // Skip elements with data-no-translate attribute (e.g., article titles, IDs)
           let el = parent;
           while (el) {
             if (el.hasAttribute && el.hasAttribute('data-no-translate')) {
@@ -83,6 +101,7 @@ export const useTranslation = (deps = []) => {
             el = el.parentElement;
           }
 
+          // Skip empty or whitespace-only text
           if (!node.textContent.trim()) {
             return NodeFilter.FILTER_REJECT;
           }
@@ -92,6 +111,7 @@ export const useTranslation = (deps = []) => {
       }
     );
 
+    // Collect all valid text nodes
     let node;
     while (node = walker.nextNode()) {
       textNodes.push(node);

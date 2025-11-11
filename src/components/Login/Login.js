@@ -46,10 +46,9 @@ const Login = () => {
   return (
     <div className="login-container" ref={loginRef}>
       <div className="brand-section">
-        <h1 className="brand-title">Healthy</h1>
+        <h1 className="brand-title">BlogInfo</h1>
         <div className="brand-motto">
-          <p>Your health, your choice.</p>
-          <p>Start living better today.</p>
+          <p>For your knowledge</p>
         </div>
       </div>
 
