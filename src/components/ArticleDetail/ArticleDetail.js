@@ -21,6 +21,38 @@
     if (cat.includes('sport')) return extractYouTubeId(videoFallback.sport) || videoFallback.default;
     return extractYouTubeId(videoFallback.default) || 'pxwm3sqAytE';
   };
+
+  // Prefer article-provided video URLs (from API) before falling back
+  const getArticleVideoId = (article) => {
+    if (!article) return '';
+
+    const candidates = [];
+
+    // Explicit youtubeId field if present
+    if (article.youtubeId) {
+      candidates.push(article.youtubeId);
+    }
+
+    // API fields: arrays of URLs
+    if (Array.isArray(article.video_urls)) {
+      candidates.push(...article.video_urls);
+    }
+    if (Array.isArray(article.media_urls)) {
+      candidates.push(...article.media_urls);
+    }
+
+    // Optional single URL field
+    if (article.video_url) {
+      candidates.push(article.video_url);
+    }
+
+    for (const candidate of candidates) {
+      const id = extractYouTubeId(candidate);
+      if (id) return id;
+    }
+
+    return '';
+  };
   // Get the article ID from the URL parameters
   const { id } = useParams();
   const navigate = useNavigate();
@@ -425,7 +457,7 @@
               <div className="media-section">
                 <div className="youtube-wrapper">
                   <iframe
-                    src={`https://www.youtube.com/embed/${extractYouTubeId(article.youtubeId) || getFallbackId()}`}
+                    src={`https://www.youtube.com/embed/${getArticleVideoId(article) || getFallbackId()}`}
                     title={article.title || 'YouTube video'}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen

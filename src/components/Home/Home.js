@@ -99,13 +99,27 @@ const Home = () => {
 
   const pickArticleImageField = (a) => {
     if (!a) return '';
-    return (
+
+    // Prefer single string image fields first (backwards compatible)
+    const single =
       a.image ||
       a.imageUrl || a.imageURL || a.image_url ||
       a.imagePath || a.image_path ||
       a.thumbnail || a.thumbnailUrl || a.thumbnail_url ||
       a.cover || a.coverUrl || a.cover_url ||
-      a.photo || a.picture || ''
+      a.photo || a.picture || '';
+
+    if (single) return single;
+
+    // Fall back to array-based fields from the API (e.g. image_urls, media_urls, video_urls)
+    const firstFromArray = (arr) =>
+      Array.isArray(arr) && arr.length ? arr[0] : '';
+
+    return (
+      firstFromArray(a.image_urls) ||
+      firstFromArray(a.media_urls) ||
+      firstFromArray(a.video_urls) ||
+      ''
     );
   };
 
