@@ -52,6 +52,9 @@ const Header = () => {
           <div className="auth-section">
             {isAuthenticated ? (
               <>
+                {user?.role === 'admin' && (
+                  <Link className="auth-button" to="/admin">Admin Panel</Link>
+                )}
                 <button className="auth-button" onClick={handleLogout}>Logout</button>
               </>
             ) : (
@@ -73,8 +76,19 @@ const Header = () => {
           <Link className="nav-button" to="/health">Disease</Link>
           <Link className="nav-button" to="/technology">Trendings</Link>
           <Link className="nav-button" to="/sport">Style</Link>
-          <Link className="auth-button" to="/login">Login</Link>
-          <Link className="auth-button sign-up-button" to="/register">Sign Up</Link>
+          {isAuthenticated ? (
+            <>
+              {user?.role === 'admin' && (
+                <Link className="auth-button" to="/admin">Admin Panel</Link>
+              )}
+              <button className="auth-button" onClick={handleLogout}>Logout</button>
+            </>
+          ) : (
+            <>
+              <Link className="auth-button" to="/login">Login</Link>
+              <Link className="auth-button sign-up-button" to="/register">Sign Up</Link>
+            </>
+          )}
         </div>
       )}
     </header>

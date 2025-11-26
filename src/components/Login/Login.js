@@ -34,8 +34,14 @@ const Login = () => {
     setError('');
 
     try {
-      await login(formData.email, formData.password);
-      navigate('/');
+      const result = await login(formData.email, formData.password);
+      
+      // Redirect based on user role
+      if (result?.user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err?.message || 'An error occurred. Please try again.');
     } finally {

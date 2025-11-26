@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
       }
       setIsAuthenticated(true);
       setUser(data?.user || null);
-      return true;
+      return data;
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
@@ -69,7 +69,8 @@ export const AuthProvider = ({ children }) => {
     user,
     token,
     login,
-    logout
+    logout,
+    isAdmin: () => user?.role === 'admin'
   };
 
     // Provide the authentication context to the children components

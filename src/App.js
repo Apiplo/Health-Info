@@ -25,6 +25,20 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
+const AdminRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+  
+  if (user?.role !== 'admin') {
+    return <Navigate to="/" />;
+  }
+  
+  return children;
+};
+
 function AppContent() {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
@@ -47,8 +61,16 @@ function AppContent() {
         <Route path="/health" element={<HealthPage />} />
         <Route path="/technology" element={<TechnologyPage />} />
         <Route path="/sport" element={<SportPage />} /> 
-        <Route path="/admin" element={<AdminHome />} />
-        <Route path="/admin/articles" element={<AdminArticles />} />
+        <Route path="/admin" element={
+          <AdminRoute>
+            <AdminHome />
+          </AdminRoute>
+        } />
+        <Route path="/admin/articles" element={
+          <AdminRoute>
+            <AdminArticles />
+          </AdminRoute>
+        } />
       </Routes>
     </AppContainer>
   );
