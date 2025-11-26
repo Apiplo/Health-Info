@@ -94,17 +94,41 @@ export default function AdminHome() {
         <StatCard title="Sport" value={counts.byCategory.sport || 0} to="/admin/articles?category=sport" />
       </div>
 
-      <div style={{ marginTop: 24 }}>
-        <Link to="/admin/articles" style={{
-          display: 'inline-block',
-          background: '#111827',
-          color: '#fff',
-          padding: '10px 16px',
-          borderRadius: 8,
-          textDecoration: 'none',
-          fontWeight: 600
-        }}>
-          Go to Article Manager
+      <div style={{ marginTop: 32, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 16 }}>
+        <Link to="/admin/articles" style={{ textDecoration: 'none' }}>
+          <div style={{
+            background: '#111827',
+            color: '#fff',
+            padding: 24,
+            borderRadius: 12,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+            height: '100%',
+            boxSizing: 'border-box'
+          }}>
+            <div style={{ fontSize: 18, fontWeight: 600 }}>Article Manager</div>
+            <div style={{ fontSize: 14, opacity: 0.8 }}>Create, edit, and translate articles.</div>
+            <div style={{ marginTop: 'auto', fontWeight: 500 }}>Manage Articles →</div>
+          </div>
+        </Link>
+
+        <Link to="/admin/users" style={{ textDecoration: 'none' }}>
+          <div style={{
+            background: '#2563eb',
+            color: '#fff',
+            padding: 24,
+            borderRadius: 12,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+            height: '100%',
+            boxSizing: 'border-box'
+          }}>
+            <div style={{ fontSize: 18, fontWeight: 600 }}>User Manager</div>
+            <div style={{ fontSize: 14, opacity: 0.8 }}>Manage users, roles, and permissions.</div>
+            <div style={{ marginTop: 'auto', fontWeight: 500 }}>Manage Users →</div>
+          </div>
         </Link>
       </div>
     </div>

@@ -14,6 +14,7 @@ import TechnologyPage from './components/TechnologyPage/TechnologyPage';
 import SportPage from './components/SportPage/SportPage';
 import AdminHome from './components/Admin/AdminHome';
 import AdminArticles from './components/Admin/AdminArticles';
+import AdminUsers from './components/Admin/AdminUsers';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -69,6 +70,11 @@ function AppContent() {
         <Route path="/admin/articles" element={
           <AdminRoute>
             <AdminArticles />
+          </AdminRoute>
+        } />
+        <Route path="/admin/users" element={
+          <AdminRoute>
+            <AdminUsers />
           </AdminRoute>
         } />
       </Routes>
