@@ -3,15 +3,15 @@ import React from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import './LanguageToggle.css';
 
-// Language toggle button component - switches between English and Bangla
+ // Language toggle button component - switches between English and Bangla
 const LanguageToggle = () => {
   // Get current language state and toggle function from context
   const { currentLanguage, toggleLanguage, isTranslating } = useLanguage();
 
   return (
-    <div className="language-toggle-container">
+    <div className="language-toggle-container" data-no-translate>
       {/* Language toggle button */}
-      <button 
+      <button
         className={`language-toggle-btn ${isTranslating ? 'translating' : ''}`}
         onClick={toggleLanguage}
         disabled={isTranslating} // Disable button while translating
