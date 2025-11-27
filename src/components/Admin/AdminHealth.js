@@ -5,9 +5,6 @@ import {
   fetchHealth,
   fetchAdminStats,
   fetchInactiveUsers,
-  fetchOrphanedContent,
-  runCleanup,
-  fetchUserStats,
   fetchTranslationStatus,
   fetchMissingTranslations,
 } from '../../services/healthService';
@@ -132,20 +129,9 @@ export default function AdminHealth() {
   const [adminStatsLoading, setAdminStatsLoading] = useState(false);
   const [adminStatsError, setAdminStatsError] = useState('');
 
-  const [userStats, setUserStats] = useState(null);
-  const [userStatsLoading, setUserStatsLoading] = useState(false);
-  const [userStatsError, setUserStatsError] = useState('');
-
   const [inactiveUsers, setInactiveUsers] = useState([]);
   const [inactiveLoading, setInactiveLoading] = useState(false);
   const [inactiveError, setInactiveError] = useState('');
-
-  const [orphaned, setOrphaned] = useState(null);
-  const [orphanedLoading, setOrphanedLoading] = useState(false);
-  const [orphanedError, setOrphanedError] = useState('');
-
-  const [cleanupRunning, setCleanupRunning] = useState(false);
-  const [cleanupMessage, setCleanupMessage] = useState('');
 
   const [translationStatus, setTranslationStatus] = useState(null);
   const [translationStatusLoading, setTranslationStatusLoading] = useState(false);
@@ -181,18 +167,6 @@ export default function AdminHealth() {
     }
   }, [token]);
 
-  const loadUserStats = useCallback(async () => {
-    try {
-      setUserStatsLoading(true);
-      setUserStatsError('');
-      const data = await fetchUserStats(token);
-      setUserStats(data);
-    } catch (e) {
-      setUserStatsError(e.message || 'Failed to load user stats');
-    } finally {
-      setUserStatsLoading(false);
-    }
-  }, [token]);
 
   const loadTranslationStatus = useCallback(async () => {
     try {
@@ -220,18 +194,6 @@ export default function AdminHealth() {
     }
   }, [token]);
 
-  const loadOrphaned = useCallback(async () => {
-    try {
-      setOrphanedLoading(true);
-      setOrphanedError('');
-      const data = await fetchOrphanedContent(token);
-      setOrphaned(data?.orphanedContent || null);
-    } catch (e) {
-      setOrphanedError(e.message || 'Failed to load orphaned content');
-    } finally {
-      setOrphanedLoading(false);
-    }
-  }, [token]);
 
   const loadMissingTranslations = useCallback(async () => {
     try {
@@ -253,10 +215,8 @@ export default function AdminHealth() {
       await Promise.all([
         loadHealth(),
         loadAdminStats(),
-        loadUserStats(),
         loadTranslationStatus(),
         loadInactiveUsers(),
-        loadOrphaned(),
         loadMissingTranslations(),
       ]);
     };
@@ -267,7 +227,6 @@ export default function AdminHealth() {
       if (cancelled) return;
       loadHealth();
       loadAdminStats();
-      loadUserStats();
       loadTranslationStatus();
     }, 30000);
 
@@ -278,10 +237,8 @@ export default function AdminHealth() {
   }, [
     loadHealth,
     loadAdminStats,
-    loadUserStats,
     loadTranslationStatus,
     loadInactiveUsers,
-    loadOrphaned,
     loadMissingTranslations,
   ]);
 
@@ -293,23 +250,8 @@ export default function AdminHealth() {
   }, [health]);
 
   const articleStats = adminStats?.stats?.articles;
-  const userRoleBreakdown = adminStats?.stats?.users?.roles || {};
   const orphanedCounts = adminStats?.stats?.orphanedContent || {};
 
-  async function handleRunCleanup() {
-    if (!window.confirm('This will clean up orphaned data. Continue?')) return;
-    try {
-      setCleanupRunning(true);
-      setCleanupMessage('');
-      const res = await runCleanup(token);
-      setCleanupMessage(res?.message || 'Cleanup completed');
-      await Promise.all([loadOrphaned(), loadAdminStats()]);
-    } catch (e) {
-      setCleanupMessage(e.message || 'Cleanup failed');
-    } finally {
-      setCleanupRunning(false);
-    }
-  }
 
   return (
     <AdminLayout>
@@ -353,10 +295,8 @@ export default function AdminHealth() {
             onClick={() => {
               loadHealth();
               loadAdminStats();
-              loadUserStats();
               loadTranslationStatus();
               loadInactiveUsers();
-              loadOrphaned();
               loadMissingTranslations();
             }}
             style={{
@@ -455,28 +395,6 @@ export default function AdminHealth() {
             )}
           </Card>
 
-          <Card title="User Health">
-            {userStatsLoading && <div style={{ color: '#6b7280' }}>Loading…</div>}
-            {userStatsError && (
-              <div style={{ color: '#b91c1c', fontSize: 13 }}>{userStatsError}</div>
-            )}
-            {!userStatsLoading && !userStatsError && userStats?.stats && (
-              <div style={{ fontSize: 13, color: '#4b5563' }}>
-                <div style={{ marginBottom: 4 }}>
-                  <strong>Total:</strong> {userStats.stats.totalUsers}
-                </div>
-                <div style={{ marginBottom: 4 }}>
-                  <strong>Active:</strong> {userStats.stats.activeUsers}
-                </div>
-                <div>
-                  <strong>Roles:</strong>{' '}
-                  {userStats.stats.usersByRole
-                    .map((r) => `${r.role}: ${r.count}`)
-                    .join(' · ')}
-                </div>
-              </div>
-            )}
-          </Card>
 
           <Card title="Localization Coverage">
             {translationStatusLoading && (
@@ -608,86 +526,6 @@ export default function AdminHealth() {
             )}
           </Card>
 
-          <Card
-            title="Data Integrity (Orphaned Content)"
-            right={
-              <button
-                onClick={loadOrphaned}
-                style={{
-                  border: 'none',
-                  background: 'transparent',
-                  color: '#2563eb',
-                  fontSize: 12,
-                  cursor: 'pointer',
-                  marginRight: 8,
-                }}
-              >
-                Refresh
-              </button>
-            }
-          >
-            {orphanedLoading && <div style={{ color: '#6b7280' }}>Loading…</div>}
-            {orphanedError && (
-              <div style={{ color: '#b91c1c', fontSize: 13 }}>{orphanedError}</div>
-            )}
-            {!orphanedLoading && !orphanedError && (
-              <div style={{ fontSize: 13, color: '#4b5563' }}>
-                {orphaned ? (
-                  <>
-                    <ul style={{ paddingLeft: 18, marginTop: 0, marginBottom: 8 }}>
-                      <li>
-                        Articles without translations:{' '}
-                        {orphaned.articlesWithoutTranslations?.length ?? 0}
-                      </li>
-                      <li>
-                        Translations without articles:{' '}
-                        {orphaned.translationsWithoutArticles?.length ?? 0}
-                      </li>
-                      <li>
-                        Tags without articles:{' '}
-                        {orphaned.tagsWithoutArticles?.length ?? 0}
-                      </li>
-                      <li>
-                        Categories without articles:{' '}
-                        {orphaned.categoriesWithoutArticles?.length ?? 0}
-                      </li>
-                    </ul>
-                    <button
-                      onClick={handleRunCleanup}
-                      disabled={cleanupRunning}
-                      style={{
-                        padding: '8px 12px',
-                        borderRadius: 6,
-                        border: 'none',
-                        background: '#dc2626',
-                        color: '#fff',
-                        fontSize: 13,
-                        fontWeight: 600,
-                        cursor: cleanupRunning ? 'default' : 'pointer',
-                      }}
-                    >
-                      {cleanupRunning ? 'Running Cleanup…' : 'Run Cleanup'}
-                    </button>
-                    {cleanupMessage && (
-                      <div
-                        style={{
-                          marginTop: 8,
-                          fontSize: 12,
-                          color: '#6b7280',
-                        }}
-                      >
-                        {cleanupMessage}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div style={{ color: '#6b7280' }}>
-                    No orphaned content information available.
-                  </div>
-                )}
-              </div>
-            )}
-          </Card>
         </div>
 
         {/* Bottom row: localization health */}
