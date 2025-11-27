@@ -1,6 +1,6 @@
-# HealthInfo Website
+# BlogInfo Website
 
-A modern, responsive health information website built with React.js featuring user authentication, multi-language support, article management, and category-based content organization.
+A modern, responsive blog information website built with React.js featuring user authentication, multi-language support, article management, and category-based content organization.
 
 ## Features
 

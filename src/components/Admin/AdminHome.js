@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import AdminLayout from './AdminLayout';
 
 const apiBase = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
 
@@ -76,42 +77,43 @@ export default function AdminHome() {
   }, [articles]);
 
   return (
-    <div style={{ maxWidth: 1100, margin: '24px auto', padding: '0 16px' }}>
-      <h1 style={{ fontSize: 28, marginBottom: 8 }}>Admin Overview</h1>
-      <p style={{ color: '#667085', marginBottom: 24 }}>Quick overview of content and shortcuts.</p>
+    <AdminLayout>
+      <div style={{ maxWidth: 1100, margin: '24px auto', padding: '0 16px' }}>
+        <h1 style={{ fontSize: 28, marginBottom: 8 }}>Admin Overview</h1>
+        <p style={{ color: '#667085', marginBottom: 24 }}>Quick overview of content and shortcuts.</p>
 
-      {loading && <div>Loading overview…</div>}
-      {error && (
-        <div style={{ marginBottom: 16, color: '#b91c1c' }}>
-          {error} — showing whatever is available.
-        </div>
-      )}
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16 }}>
-        <StatCard title="Total Articles" value={counts.total} to="/admin/articles" />
-        <StatCard title="Health" value={counts.byCategory.health || 0} to="/admin/articles?category=health" />
-        <StatCard title="Technology" value={counts.byCategory.technology || 0} to="/admin/articles?category=technology" />
-        <StatCard title="Sport" value={counts.byCategory.sport || 0} to="/admin/articles?category=sport" />
-      </div>
-
-      <div style={{ marginTop: 32, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 16 }}>
-        <Link to="/admin/articles" style={{ textDecoration: 'none' }}>
-          <div style={{
-            background: '#111827',
-            color: '#fff',
-            padding: 24,
-            borderRadius: 12,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-            height: '100%',
-            boxSizing: 'border-box'
-          }}>
-            <div style={{ fontSize: 18, fontWeight: 600 }}>Article Manager</div>
-            <div style={{ fontSize: 14, opacity: 0.8 }}>Create, edit, and translate articles.</div>
-            <div style={{ marginTop: 'auto', fontWeight: 500 }}>Manage Articles →</div>
+        {loading && <div>Loading overview…</div>}
+        {error && (
+          <div style={{ marginBottom: 16, color: '#b91c1c' }}>
+            {error} — showing whatever is available.
           </div>
-        </Link>
+        )}
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16 }}>
+          <StatCard title="Total Articles" value={counts.total} to="/admin/articles" />
+          <StatCard title="Health" value={counts.byCategory.health || 0} to="/admin/articles?category=health" />
+          <StatCard title="Technology" value={counts.byCategory.technology || 0} to="/admin/articles?category=technology" />
+          <StatCard title="Sport" value={counts.byCategory.sport || 0} to="/admin/articles?category=sport" />
+        </div>
+
+        <div style={{ marginTop: 32, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 16 }}>
+          <Link to="/admin/articles" style={{ textDecoration: 'none' }}>
+            <div style={{
+              background: '#111827',
+              color: '#fff',
+              padding: 24,
+              borderRadius: 12,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              height: '100%',
+              boxSizing: 'border-box'
+            }}>
+              <div style={{ fontSize: 18, fontWeight: 600 }}>Article Manager</div>
+              <div style={{ fontSize: 14, opacity: 0.8 }}>Create, edit, and translate articles.</div>
+              <div style={{ marginTop: 'auto', fontWeight: 500 }}>Manage Articles →</div>
+            </div>
+          </Link>
 
         <Link to="/admin/users" style={{ textDecoration: 'none' }}>
           <div style={{
@@ -167,6 +169,6 @@ export default function AdminHome() {
           </div>
         </Link>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

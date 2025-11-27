@@ -64,7 +64,7 @@ function AppContent() {
         } />
         <Route path="/health" element={<HealthPage />} />
         <Route path="/technology" element={<TechnologyPage />} />
-        <Route path="/sport" element={<SportPage />} />
+        <Route path="/sport" element={<SportPage />} /> 
         <Route path="/admin" element={
           <AdminRoute>
             <AdminHome />
