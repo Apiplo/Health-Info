@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import AdminLayout from './AdminLayout';
 import { fetchTags, createTag, updateTag, deleteTag } from '../../services/tagService';
 
 function TagRow({ tag, onEdit, onDelete, onViewArticles }) {
@@ -251,362 +252,364 @@ export default function AdminTags() {
   }
 
   return (
-    <div style={{ maxWidth: 1100, margin: '24px auto', padding: '0 16px' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 20,
-          gap: 12,
-          flexWrap: 'wrap',
-        }}
-      >
-        <div>
-          <h1 style={{ fontSize: 26, margin: 0 }}>Tag Management</h1>
-          <p style={{ margin: '4px 0 0', color: '#6b7280', maxWidth: 520 }}>
-            Create and organize the topic labels used across your articles. These tags help
-            readers find related content.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={startCreate}
-          style={{
-            background: '#111827',
-            color: '#fff',
-            padding: '8px 14px',
-            borderRadius: 8,
-            border: 'none',
-            fontWeight: 600,
-            cursor: 'pointer',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          New Tag
-        </button>
-      </div>
-
-      <div
-        style={{
-          marginBottom: 16,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          flexWrap: 'wrap',
-        }}
-      >
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search tags by code or name…"
-          style={{
-            flex: 1,
-            minWidth: 200,
-            padding: 8,
-            borderRadius: 6,
-            border: '1px solid #e5e7eb',
-            fontSize: 14,
-          }}
-        />
-        <button
-          type="button"
-          onClick={loadTags}
-          style={{
-            padding: '8px 12px',
-            borderRadius: 6,
-            border: '1px solid #e5e7eb',
-            background: '#f9fafb',
-            cursor: 'pointer',
-            fontSize: 14,
-          }}
-        >
-          Refresh
-        </button>
-      </div>
-
-      {listError && (
-        <div style={{ marginBottom: 12, color: '#b91c1c', fontSize: 14 }}>
-          {listError}
-        </div>
-      )}
-
-      {loadingList ? (
-        <div style={{ padding: 24, textAlign: 'center', color: '#6b7280' }}>
-          Loading tags…
-        </div>
-      ) : (
+    <AdminLayout>
+      <div style={{ maxWidth: 1100, margin: '24px auto', padding: '0 16px' }}>
         <div
           style={{
-            background: '#fff',
-            borderRadius: 8,
-            border: '1px solid #e5e7eb',
-            overflowX: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 20,
+            gap: 12,
+            flexWrap: 'wrap',
           }}
         >
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ background: '#f9fafb', textAlign: 'left' }}>
-                <th
+          <div>
+            <h1 style={{ fontSize: 26, margin: 0 }}>Tag Management</h1>
+            <p style={{ margin: '4px 0 0', color: '#6b7280', maxWidth: 520 }}>
+              Create and organize the topic labels used across your articles. These tags help
+              readers find related content.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={startCreate}
+            style={{
+              background: '#111827',
+              color: '#fff',
+              padding: '8px 14px',
+              borderRadius: 8,
+              border: 'none',
+              fontWeight: 600,
+              cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            New Tag
+          </button>
+        </div>
+
+        <div
+          style={{
+            marginBottom: 16,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            flexWrap: 'wrap',
+          }}
+        >
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search tags by code or name…"
+            style={{
+              flex: 1,
+              minWidth: 200,
+              padding: 8,
+              borderRadius: 6,
+              border: '1px solid #e5e7eb',
+              fontSize: 14,
+            }}
+          />
+          <button
+            type="button"
+            onClick={loadTags}
+            style={{
+              padding: '8px 12px',
+              borderRadius: 6,
+              border: '1px solid #e5e7eb',
+              background: '#f9fafb',
+              cursor: 'pointer',
+              fontSize: 14,
+            }}
+          >
+            Refresh
+          </button>
+        </div>
+
+        {listError && (
+          <div style={{ marginBottom: 12, color: '#b91c1c', fontSize: 14 }}>
+            {listError}
+          </div>
+        )}
+
+        {loadingList ? (
+          <div style={{ padding: 24, textAlign: 'center', color: '#6b7280' }}>
+            Loading tags…
+          </div>
+        ) : (
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: 8,
+              border: '1px solid #e5e7eb',
+              overflowX: 'auto',
+            }}
+          >
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: '#f9fafb', textAlign: 'left' }}>
+                  <th
+                    style={{
+                      padding: '10px 12px',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: 12,
+                      textTransform: 'uppercase',
+                      color: '#4b5563',
+                      letterSpacing: '0.03em',
+                    }}
+                  >
+                    Code
+                  </th>
+                  <th
+                    style={{
+                      padding: '10px 12px',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: 12,
+                      textTransform: 'uppercase',
+                      color: '#4b5563',
+                      letterSpacing: '0.03em',
+                    }}
+                  >
+                    English name
+                  </th>
+                  <th
+                    style={{
+                      padding: '10px 12px',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: 12,
+                      textTransform: 'uppercase',
+                      color: '#4b5563',
+                      letterSpacing: '0.03em',
+                    }}
+                  >
+                    Bangla name
+                  </th>
+                  <th
+                    style={{
+                      padding: '10px 12px',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: 12,
+                      textTransform: 'uppercase',
+                      color: '#4b5563',
+                      letterSpacing: '0.03em',
+                    }}
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((tag) => (
+                  <TagRow
+                    key={tag.code}
+                    tag={tag}
+                    onEdit={startEdit}
+                    onDelete={handleDelete}
+                    onViewArticles={handleViewArticles}
+                  />
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={4}
+                      style={{
+                        padding: 24,
+                        textAlign: 'center',
+                        color: '#6b7280',
+                      }}
+                    >
+                      No tags found. Try a different search or create a new tag.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {dialog && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0,0,0,0.45)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 50,
+            }}
+          >
+            <form
+              onSubmit={handleSave}
+              style={{
+                background: '#fff',
+                padding: 24,
+                borderRadius: 12,
+                width: '100%',
+                maxWidth: 480,
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+              }}
+            >
+              <h2 style={{ margin: '0 0 8px', fontSize: 20 }}>
+                {dialog.mode === 'create' ? 'Create new tag' : 'Edit tag'}
+              </h2>
+              <p style={{ margin: '0 0 16px', color: '#6b7280', fontSize: 14 }}>
+                Choose a clear name that content authors will recognize. The code is used
+                behind the scenes in the system.
+              </p>
+
+              <div style={{ marginBottom: 14 }}>
+                <label
                   style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: 12,
-                    textTransform: 'uppercase',
-                    color: '#4b5563',
-                    letterSpacing: '0.03em',
+                    display: 'block',
+                    marginBottom: 4,
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: '#374151',
                   }}
                 >
-                  Code
-                </th>
-                <th
+                  Tag code
+                </label>
+                <input
+                  type="text"
+                  value={dialog.code}
+                  onChange={(e) => handleFieldChange('code', e.target.value.toLowerCase())}
+                  disabled={dialog.mode === 'edit'}
+                  placeholder="Example: health-tips"
                   style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: 12,
-                    textTransform: 'uppercase',
-                    color: '#4b5563',
-                    letterSpacing: '0.03em',
+                    width: '100%',
+                    padding: 8,
+                    borderRadius: 6,
+                    border: '1px solid ' + (fieldErrors.code ? '#dc2626' : '#d1d5db'),
+                    fontSize: 14,
+                    background: dialog.mode === 'edit' ? '#f9fafb' : '#fff',
+                  }}
+                />
+                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                  Small letters, numbers, and dashes only. No spaces. This cannot be changed later.
+                </div>
+                {fieldErrors.code && (
+                  <div style={{ fontSize: 12, color: '#dc2626', marginTop: 4 }}>
+                    {fieldErrors.code}
+                  </div>
+                )}
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label
+                  style={{
+                    display: 'block',
+                    marginBottom: 4,
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: '#374151',
                   }}
                 >
                   English name
-                </th>
-                <th
+                </label>
+                <input
+                  type="text"
+                  value={dialog.name_en}
+                  onChange={(e) => handleFieldChange('name_en', e.target.value)}
+                  placeholder="What editors will see in English"
                   style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: 12,
-                    textTransform: 'uppercase',
-                    color: '#4b5563',
-                    letterSpacing: '0.03em',
+                    width: '100%',
+                    padding: 8,
+                    borderRadius: 6,
+                    border: '1px solid ' + (fieldErrors.name_en ? '#dc2626' : '#d1d5db'),
+                    fontSize: 14,
                   }}
-                >
-                  Bangla name
-                </th>
-                <th
-                  style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: 12,
-                    textTransform: 'uppercase',
-                    color: '#4b5563',
-                    letterSpacing: '0.03em',
-                  }}
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((tag) => (
-                <TagRow
-                  key={tag.code}
-                  tag={tag}
-                  onEdit={startEdit}
-                  onDelete={handleDelete}
-                  onViewArticles={handleViewArticles}
                 />
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={4}
-                    style={{
-                      padding: 24,
-                      textAlign: 'center',
-                      color: '#6b7280',
-                    }}
-                  >
-                    No tags found. Try a different search or create a new tag.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {dialog && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.45)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 50,
-          }}
-        >
-          <form
-            onSubmit={handleSave}
-            style={{
-              background: '#fff',
-              padding: 24,
-              borderRadius: 12,
-              width: '100%',
-              maxWidth: 480,
-              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-            }}
-          >
-            <h2 style={{ margin: '0 0 8px', fontSize: 20 }}>
-              {dialog.mode === 'create' ? 'Create new tag' : 'Edit tag'}
-            </h2>
-            <p style={{ margin: '0 0 16px', color: '#6b7280', fontSize: 14 }}>
-              Choose a clear name that content authors will recognize. The code is used
-              behind the scenes in the system.
-            </p>
-
-            <div style={{ marginBottom: 14 }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: 4,
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: '#374151',
-                }}
-              >
-                Tag code
-              </label>
-              <input
-                type="text"
-                value={dialog.code}
-                onChange={(e) => handleFieldChange('code', e.target.value.toLowerCase())}
-                disabled={dialog.mode === 'edit'}
-                placeholder="Example: health-tips"
-                style={{
-                  width: '100%',
-                  padding: 8,
-                  borderRadius: 6,
-                  border: '1px solid ' + (fieldErrors.code ? '#dc2626' : '#d1d5db'),
-                  fontSize: 14,
-                  background: dialog.mode === 'edit' ? '#f9fafb' : '#fff',
-                }}
-              />
-              <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
-                Small letters, numbers, and dashes only. No spaces. This cannot be changed later.
+                {fieldErrors.name_en && (
+                  <div style={{ fontSize: 12, color: '#dc2626', marginTop: 4 }}>
+                    {fieldErrors.name_en}
+                  </div>
+                )}
               </div>
-              {fieldErrors.code && (
-                <div style={{ fontSize: 12, color: '#dc2626', marginTop: 4 }}>
-                  {fieldErrors.code}
-                </div>
-              )}
-            </div>
 
-            <div style={{ marginBottom: 14 }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: 4,
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: '#374151',
-                }}
-              >
-                English name
-              </label>
-              <input
-                type="text"
-                value={dialog.name_en}
-                onChange={(e) => handleFieldChange('name_en', e.target.value)}
-                placeholder="What editors will see in English"
-                style={{
-                  width: '100%',
-                  padding: 8,
-                  borderRadius: 6,
-                  border: '1px solid ' + (fieldErrors.name_en ? '#dc2626' : '#d1d5db'),
-                  fontSize: 14,
-                }}
-              />
-              {fieldErrors.name_en && (
-                <div style={{ fontSize: 12, color: '#dc2626', marginTop: 4 }}>
-                  {fieldErrors.name_en}
+              <div style={{ marginBottom: 20 }}>
+                <label
+                  style={{
+                    display: 'block',
+                    marginBottom: 4,
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: '#374151',
+                  }}
+                >
+                  Bangla name (optional)
+                </label>
+                <input
+                  type="text"
+                  value={dialog.name_bn}
+                  onChange={(e) => handleFieldChange('name_bn', e.target.value)}
+                  placeholder="বাংলা নাম (optional)"
+                  style={{
+                    width: '100%',
+                    padding: 8,
+                    borderRadius: 6,
+                    border: '1px solid #d1d5db',
+                    fontSize: 14,
+                  }}
+                />
+                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                  Leave blank if you don't need a Bangla label for this tag.
                 </div>
-              )}
-            </div>
-
-            <div style={{ marginBottom: 20 }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: 4,
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: '#374151',
-                }}
-              >
-                Bangla name (optional)
-              </label>
-              <input
-                type="text"
-                value={dialog.name_bn}
-                onChange={(e) => handleFieldChange('name_bn', e.target.value)}
-                placeholder="বাংলা নাম (optional)"
-                style={{
-                  width: '100%',
-                  padding: 8,
-                  borderRadius: 6,
-                  border: '1px solid #d1d5db',
-                  fontSize: 14,
-                }}
-              />
-              <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
-                Leave blank if you don't need a Bangla label for this tag.
               </div>
-            </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button
-                type="button"
-                onClick={closeDialog}
-                disabled={saving}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 6,
-                  border: '1px solid #d1d5db',
-                  background: '#fff',
-                  color: '#374151',
-                  cursor: 'pointer',
-                  fontSize: 14,
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={saving}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 6,
-                  border: 'none',
-                  background: '#111827',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontSize: 14,
-                  fontWeight: 600,
-                }}
-              >
-                {saving
-                  ? dialog.mode === 'create'
-                    ? 'Creating…'
-                    : 'Saving…'
-                  : dialog.mode === 'create'
-                  ? 'Create tag'
-                  : 'Save changes'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={closeDialog}
+                  disabled={saving}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 6,
+                    border: '1px solid #d1d5db',
+                    background: '#fff',
+                    color: '#374151',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 6,
+                    border: 'none',
+                    background: '#111827',
+                    color: '#fff',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    fontWeight: 600,
+                  }}
+                >
+                  {saving
+                    ? dialog.mode === 'create'
+                      ? 'Creating…'
+                      : 'Saving…'
+                    : dialog.mode === 'create'
+                    ? 'Create tag'
+                    : 'Save changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
 
-      {!!deleteBusyCode && (
-        <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
-          Deleting tag "{deleteBusyCode}"…
-        </div>
-      )}
-    </div>
+        {!!deleteBusyCode && (
+          <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
+            Deleting tag "{deleteBusyCode}"…
+          </div>
+        )}
+      </div>
+    </AdminLayout>
   );
 }

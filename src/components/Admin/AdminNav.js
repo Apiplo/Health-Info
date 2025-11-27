@@ -8,7 +8,9 @@ export default function AdminNav() {
     { path: '/admin', label: 'Dashboard', icon: '📊' },
     { path: '/admin/health', label: 'Health', icon: '❤️' },
     { path: '/admin/articles', label: 'Articles', icon: '📝' },
-    { path: '/admin/users', label: 'Users', icon: '👥' }
+    { path: '/admin/users', label: 'Users', icon: '👥' },
+    { path: '/admin/categories', label: 'Categories', icon: '📁' },
+    { path: '/admin/tags', label: 'Tags', icon: '🏷️' }
   ];
 
   const isActive = (path) => {

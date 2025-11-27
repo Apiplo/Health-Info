@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import AdminLayout from './AdminLayout';
 import {
   fetchCategories,
   createCategory,
@@ -287,364 +288,366 @@ export default function AdminCategories() {
   }
 
   return (
-    <div style={{ maxWidth: 1100, margin: '24px auto', padding: '0 16px' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 20,
-          gap: 12,
-          flexWrap: 'wrap',
-        }}
-      >
-        <div>
-          <h1 style={{ fontSize: 26, margin: 0 }}>Category Management</h1>
-          <p style={{ margin: '4px 0 0', color: '#6b7280', maxWidth: 520 }}>
-            Create and organize high-level categories for your articles. Categories are
-            used to group content such as Health, Technology, or Sport.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={startCreate}
-          style={{
-            background: '#111827',
-            color: '#fff',
-            padding: '8px 14px',
-            borderRadius: 8,
-            border: 'none',
-            fontWeight: 600,
-            cursor: 'pointer',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          New Category
-        </button>
-      </div>
-
-      <div
-        style={{
-          marginBottom: 16,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          flexWrap: 'wrap',
-        }}
-      >
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search categories by ID, name, or code…"
-          style={{
-            flex: 1,
-            minWidth: 200,
-            padding: 8,
-            borderRadius: 6,
-            border: '1px solid #e5e7eb',
-            fontSize: 14,
-          }}
-        />
-        <button
-          type="button"
-          onClick={loadCategories}
-          style={{
-            padding: '8px 12px',
-            borderRadius: 6,
-            border: '1px solid #e5e7eb',
-            background: '#f9fafb',
-            cursor: 'pointer',
-            fontSize: 14,
-          }}
-        >
-          Refresh
-        </button>
-      </div>
-
-      {listError && (
-        <div style={{ marginBottom: 12, color: '#b91c1c', fontSize: 14 }}>
-          {listError}
-        </div>
-      )}
-
-      {loadingList ? (
-        <div style={{ padding: 24, textAlign: 'center', color: '#6b7280' }}>
-          Loading categories…
-        </div>
-      ) : (
+    <AdminLayout>
+      <div style={{ maxWidth: 1100, margin: '24px auto', padding: '0 16px' }}>
         <div
           style={{
-            background: '#fff',
-            borderRadius: 8,
-            border: '1px solid #e5e7eb',
-            overflowX: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 20,
+            gap: 12,
+            flexWrap: 'wrap',
           }}
         >
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ background: '#f9fafb', textAlign: 'left' }}>
-                <th
+          <div>
+            <h1 style={{ fontSize: 26, margin: 0 }}>Category Management</h1>
+            <p style={{ margin: '4px 0 0', color: '#6b7280', maxWidth: 520 }}>
+              Create and organize high-level categories for your articles. Categories are
+              used to group content such as Health, Technology, or Sport.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={startCreate}
+            style={{
+              background: '#111827',
+              color: '#fff',
+              padding: '8px 14px',
+              borderRadius: 8,
+              border: 'none',
+              fontWeight: 600,
+              cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            New Category
+          </button>
+        </div>
+
+        <div
+          style={{
+            marginBottom: 16,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            flexWrap: 'wrap',
+          }}
+        >
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search categories by ID, name, or code…"
+            style={{
+              flex: 1,
+              minWidth: 200,
+              padding: 8,
+              borderRadius: 6,
+              border: '1px solid #e5e7eb',
+              fontSize: 14,
+            }}
+          />
+          <button
+            type="button"
+            onClick={loadCategories}
+            style={{
+              padding: '8px 12px',
+              borderRadius: 6,
+              border: '1px solid #e5e7eb',
+              background: '#f9fafb',
+              cursor: 'pointer',
+              fontSize: 14,
+            }}
+          >
+            Refresh
+          </button>
+        </div>
+
+        {listError && (
+          <div style={{ marginBottom: 12, color: '#b91c1c', fontSize: 14 }}>
+            {listError}
+          </div>
+        )}
+
+        {loadingList ? (
+          <div style={{ padding: 24, textAlign: 'center', color: '#6b7280' }}>
+            Loading categories…
+          </div>
+        ) : (
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: 8,
+              border: '1px solid #e5e7eb',
+              overflowX: 'auto',
+            }}
+          >
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: '#f9fafb', textAlign: 'left' }}>
+                  <th
+                    style={{
+                      padding: '10px 12px',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: 12,
+                      textTransform: 'uppercase',
+                      color: '#4b5563',
+                      letterSpacing: '0.03em',
+                    }}
+                  >
+                    ID
+                  </th>
+                  <th
+                    style={{
+                      padding: '10px 12px',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: 12,
+                      textTransform: 'uppercase',
+                      color: '#4b5563',
+                      letterSpacing: '0.03em',
+                    }}
+                  >
+                    English name
+                  </th>
+                  <th
+                    style={{
+                      padding: '10px 12px',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: 12,
+                      textTransform: 'uppercase',
+                      color: '#4b5563',
+                      letterSpacing: '0.03em',
+                    }}
+                  >
+                    Bangla name
+                  </th>
+                  <th
+                    style={{
+                      padding: '10px 12px',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: 12,
+                      textTransform: 'uppercase',
+                      color: '#4b5563',
+                      letterSpacing: '0.03em',
+                    }}
+                  >
+                    Code
+                  </th>
+                  <th
+                    style={{
+                      padding: '10px 12px',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: 12,
+                      textTransform: 'uppercase',
+                      color: '#4b5563',
+                      letterSpacing: '0.03em',
+                    }}
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((category) => (
+                  <CategoryRow
+                    key={category.id}
+                    category={category}
+                    onEdit={startEdit}
+                    onDelete={handleDelete}
+                    onViewArticles={handleViewArticles}
+                  />
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      style={{
+                        padding: 24,
+                        textAlign: 'center',
+                        color: '#6b7280',
+                      }}
+                    >
+                      No categories found. Try a different search or create a new
+                      category.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {dialog && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0,0,0,0.45)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 50,
+            }}
+          >
+            <form
+              onSubmit={handleSave}
+              style={{
+                background: '#fff',
+                padding: 24,
+                borderRadius: 12,
+                width: '100%',
+                maxWidth: 480,
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+              }}
+            >
+              <h2 style={{ margin: '0 0 8px', fontSize: 20 }}>
+                {dialog.mode === 'create' ? 'Create category' : 'Edit category'}
+              </h2>
+              <p
+                style={{
+                  margin: '0 0 16px',
+                  color: '#6b7280',
+                  fontSize: 14,
+                }}
+              >
+                Set clear names that editors will recognize. The system will
+                generate a URL-friendly code from the English name.
+              </p>
+
+              <div style={{ marginBottom: 14 }}>
+                <label
                   style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: 12,
-                    textTransform: 'uppercase',
-                    color: '#4b5563',
-                    letterSpacing: '0.03em',
-                  }}
-                >
-                  ID
-                </th>
-                <th
-                  style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: 12,
-                    textTransform: 'uppercase',
-                    color: '#4b5563',
-                    letterSpacing: '0.03em',
+                    display: 'block',
+                    marginBottom: 4,
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: '#374151',
                   }}
                 >
                   English name
-                </th>
-                <th
+                </label>
+                <input
+                  type="text"
+                  value={dialog.name_en}
+                  onChange={(e) => handleFieldChange('name_en', e.target.value)}
+                  placeholder="e.g. Health, Technology, Sport"
                   style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: 12,
-                    textTransform: 'uppercase',
-                    color: '#4b5563',
-                    letterSpacing: '0.03em',
+                    width: '100%',
+                    padding: 8,
+                    borderRadius: 6,
+                    border:
+                      '1px solid ' +
+                      (fieldErrors.name_en ? '#dc2626' : '#d1d5db'),
+                    fontSize: 14,
                   }}
-                >
-                  Bangla name
-                </th>
-                <th
-                  style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: 12,
-                    textTransform: 'uppercase',
-                    color: '#4b5563',
-                    letterSpacing: '0.03em',
-                  }}
-                >
-                  Code
-                </th>
-                <th
-                  style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid #e5e7eb',
-                    fontSize: 12,
-                    textTransform: 'uppercase',
-                    color: '#4b5563',
-                    letterSpacing: '0.03em',
-                  }}
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((category) => (
-                <CategoryRow
-                  key={category.id}
-                  category={category}
-                  onEdit={startEdit}
-                  onDelete={handleDelete}
-                  onViewArticles={handleViewArticles}
                 />
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={5}
+                {fieldErrors.name_en && (
+                  <div
                     style={{
-                      padding: 24,
-                      textAlign: 'center',
-                      color: '#6b7280',
+                      fontSize: 12,
+                      color: '#dc2626',
+                      marginTop: 4,
                     }}
                   >
-                    No categories found. Try a different search or create a new
-                    category.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+                    {fieldErrors.name_en}
+                  </div>
+                )}
+              </div>
 
-      {dialog && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.45)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 50,
-          }}
-        >
-          <form
-            onSubmit={handleSave}
-            style={{
-              background: '#fff',
-              padding: 24,
-              borderRadius: 12,
-              width: '100%',
-              maxWidth: 480,
-              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
-            }}
-          >
-            <h2 style={{ margin: '0 0 8px', fontSize: 20 }}>
-              {dialog.mode === 'create' ? 'Create category' : 'Edit category'}
-            </h2>
-            <p
-              style={{
-                margin: '0 0 16px',
-                color: '#6b7280',
-                fontSize: 14,
-              }}
-            >
-              Set clear names that editors will recognize. The system will
-              generate a URL-friendly code from the English name.
-            </p>
-
-            <div style={{ marginBottom: 14 }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: 4,
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: '#374151',
-                }}
-              >
-                English name
-              </label>
-              <input
-                type="text"
-                value={dialog.name_en}
-                onChange={(e) => handleFieldChange('name_en', e.target.value)}
-                placeholder="e.g. Health, Technology, Sport"
-                style={{
-                  width: '100%',
-                  padding: 8,
-                  borderRadius: 6,
-                  border:
-                    '1px solid ' +
-                    (fieldErrors.name_en ? '#dc2626' : '#d1d5db'),
-                  fontSize: 14,
-                }}
-              />
-              {fieldErrors.name_en && (
+              <div style={{ marginBottom: 20 }}>
+                <label
+                  style={{
+                    display: 'block',
+                    marginBottom: 4,
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: '#374151',
+                  }}
+                >
+                  Bangla name (optional)
+                </label>
+                <input
+                  type="text"
+                  value={dialog.name_bn}
+                  onChange={(e) => handleFieldChange('name_bn', e.target.value)}
+                  placeholder="বাংলা নাম (optional)"
+                  style={{
+                    width: '100%',
+                    padding: 8,
+                    borderRadius: 6,
+                    border: '1px solid #d1d5db',
+                    fontSize: 14,
+                  }}
+                />
                 <div
                   style={{
                     fontSize: 12,
-                    color: '#dc2626',
+                    color: '#6b7280',
                     marginTop: 4,
                   }}
                 >
-                  {fieldErrors.name_en}
+                  Leave blank if you don't need a Bangla label for this category.
                 </div>
-              )}
-            </div>
+              </div>
 
-            <div style={{ marginBottom: 20 }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: 4,
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: '#374151',
-                }}
-              >
-                Bangla name (optional)
-              </label>
-              <input
-                type="text"
-                value={dialog.name_bn}
-                onChange={(e) => handleFieldChange('name_bn', e.target.value)}
-                placeholder="বাংলা নাম (optional)"
-                style={{
-                  width: '100%',
-                  padding: 8,
-                  borderRadius: 6,
-                  border: '1px solid #d1d5db',
-                  fontSize: 14,
-                }}
-              />
               <div
                 style={{
-                  fontSize: 12,
-                  color: '#6b7280',
-                  marginTop: 4,
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: 8,
                 }}
               >
-                Leave blank if you don't need a Bangla label for this category.
+                <button
+                  type="button"
+                  onClick={closeDialog}
+                  disabled={saving}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 6,
+                    border: '1px solid #d1d5db',
+                    background: '#fff',
+                    color: '#374151',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 6,
+                    border: 'none',
+                    background: '#111827',
+                    color: '#fff',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    fontWeight: 600,
+                  }}
+                >
+                  {saving
+                    ? dialog.mode === 'create'
+                      ? 'Creating…'
+                      : 'Saving…'
+                    : dialog.mode === 'create'
+                    ? 'Create category'
+                    : 'Save changes'}
+                </button>
               </div>
-            </div>
+            </form>
+          </div>
+        )}
 
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                gap: 8,
-              }}
-            >
-              <button
-                type="button"
-                onClick={closeDialog}
-                disabled={saving}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 6,
-                  border: '1px solid #d1d5db',
-                  background: '#fff',
-                  color: '#374151',
-                  cursor: 'pointer',
-                  fontSize: 14,
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={saving}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: 6,
-                  border: 'none',
-                  background: '#111827',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontSize: 14,
-                  fontWeight: 600,
-                }}
-              >
-                {saving
-                  ? dialog.mode === 'create'
-                    ? 'Creating…'
-                    : 'Saving…'
-                  : dialog.mode === 'create'
-                  ? 'Create category'
-                  : 'Save changes'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {deleteBusyId != null && (
-        <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
-          Deleting category #{deleteBusyId}…
-        </div>
-      )}
-    </div>
+        {deleteBusyId != null && (
+          <div style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
+            Deleting category #{deleteBusyId}…
+          </div>
+        )}
+      </div>
+    </AdminLayout>
   );
 }
