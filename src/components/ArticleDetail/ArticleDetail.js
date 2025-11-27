@@ -7,7 +7,13 @@
   import { useLanguage } from '../../contexts/LanguageContext';
   import './ArticleDetail.css';
   import { videoFallback, extractYouTubeId } from '../../data/config';
-
+  import {
+    fetchCommentsForArticle,
+    createComment,
+    editComment,
+    deleteComment as deleteCommentApi,
+  } from '../../services/commentsService';
+ 
 // Styles moved to ArticleDetail.css
 
   // Component to display the details of a single article
@@ -69,6 +75,7 @@
   const [error, setError] = useState('');
   // State for comments
   const [comments, setComments] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -78,7 +85,7 @@
   const [commentError, setCommentError] = useState('');
 
   // Translation ref for comments section (depends on comments updates)
-  const commentsRef = useTranslation([comments, commentLoading]);
+  const commentsRef = useTranslation([comments, commentLoading, loadingComments]);
 
   // State for text-to-speech
   const [isPlaying, setIsPlaying] = useState(false);
@@ -253,48 +260,56 @@
 
   // Load comments for the article
   useEffect(() => {
-    // Temporarily disable comments GET until backend bug is fixed.
-    // We keep local session comments only.
-    setComments([]);
-  }, [id]);
+    let cancelled = false;
+
+    const loadComments = async () => {
+      if (!articleId) {
+        setComments([]);
+        return;
+      }
+
+      setLoadingComments(true);
+      setCommentError('');
+      try {
+        const list = await fetchCommentsForArticle(articleId);
+        if (!cancelled) {
+          setComments(list);
+        }
+      } catch (err) {
+        console.error('Failed to load comments:', err);
+        if (!cancelled) {
+          setCommentError(err.message || 'Failed to load comments.');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingComments(false);
+        }
+      }
+    };
+
+    loadComments();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [articleId]);
 
   // Handle comment submission
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
-    
+    const trimmed = newComment.trim();
+    if (!trimmed) return;
+
     setCommentLoading(true);
     setCommentError('');
-    
+
     try {
-      const authToken = token;
-      if (!authToken) {
-        throw new Error('Authentication required');
-      }
-      
-      // Direct fetch to backend server
-      const response = await fetch(`${apiBase}/articles/${articleId}/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({ body: newComment.trim() }),
-      });
-      
-      if (!response.ok) {
-        let detail = '';
-        try { detail = await response.text(); } catch {}
-        console.error('POST comment failed body:', detail);
-        throw new Error(`Create comment failed (${response.status})`);
-      }
-      
-      const submittedComment = await response.json();
-      setComments(prev => [submittedComment, ...prev]);
+      const created = await createComment(articleId, trimmed, token);
+      setComments((prev) => [...prev, created]);
       setNewComment('');
     } catch (err) {
       console.error('Failed to submit comment:', err);
-      setCommentError('Failed to post comment. Please check server requirements.');
+      setCommentError(err.message || 'Failed to post comment.');
     } finally {
       setCommentLoading(false);
     }
@@ -313,61 +328,35 @@
 
   // Admin-only: save edited comment via PUT /api/articles/comments/:id
   const saveEdit = async (commentId) => {
-    if (!editContent.trim()) return;
+    const trimmed = editContent.trim();
+    if (!trimmed) return;
     try {
       setEditLoading(true);
-      if (!token) throw new Error('Authentication required');
-      // Use POST to article comments endpoint for edit as requested
-      const res = await fetch(`${apiBase}/articles/${articleId}/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        // Include the existing comment id so backend can treat this as an update
-        body: JSON.stringify({ id: commentId, body: editContent.trim() }),
-      });
-      if (!res.ok) {
-        let detail = '';
-        try { detail = await res.text(); } catch {}
-        console.error('Edit comment (POST) failed body:', detail);
-        throw new Error(`Failed to update (${res.status})`);
-      }
-      const updated = await res.json();
-      // Update local list with server response if it includes the updated comment
-      setComments(prev => prev.map(c => (c.id === commentId ? { ...c, ...updated } : c)));
+      setCommentError('');
+      const updated = await editComment(commentId, trimmed, token);
+      setComments((prev) =>
+        prev.map((c) => (String(c.id) === String(updated.id) ? { ...c, ...updated } : c))
+      );
       setEditingId(null);
       setEditContent('');
     } catch (e) {
       console.error('Failed to update comment:', e);
-      setCommentError('Failed to update comment.');
+      setCommentError(e.message || 'Failed to update comment.');
     } finally {
       setEditLoading(false);
     }
   };
 
   // Admin-only: delete comment via DELETE /api/articles/comments/:id
-  const deleteComment = async (commentId) => {
+  const handleDeleteComment = async (commentId) => {
     try {
       setDeleteLoadingId(commentId);
-      if (!token) throw new Error('Authentication required');
-      const res = await fetch(`${apiBase}/articles/comments/${commentId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) {
-        let detail = '';
-        try { detail = await res.text(); } catch {}
-        console.error('DELETE comment failed body:', detail);
-        throw new Error(`Failed to delete (${res.status})`);
-      }
-      // Optimistically remove from list
-      setComments(prev => prev.filter(c => c.id !== commentId));
+      setCommentError('');
+      await deleteCommentApi(commentId, token);
+      setComments((prev) => prev.filter((c) => String(c.id) !== String(commentId)));
     } catch (e) {
       console.error('Failed to delete comment:', e);
-      setCommentError('Failed to delete comment.');
+      setCommentError(e.message || 'Failed to delete comment.');
     } finally {
       setDeleteLoadingId(null);
     }
@@ -523,7 +512,15 @@
 
                 {/* Comments list */}
                 <div className="comments-list">
-                  {comments.length > 0 && (
+                  {loadingComments && (
+                    <p>Loading comments...</p>
+                  )}
+                  {!loadingComments && comments.length === 0 && !commentError && (
+                    <div className="no-comments">
+                      <p>No comments yet. Be the first to comment.</p>
+                    </div>
+                  )}
+                  {!loadingComments && comments.length > 0 && (
                     comments.map((comment) => (
                       <div key={comment.id} className="comment-item">
                         <div className="comment-avatar">
@@ -531,10 +528,29 @@
                         </div>
                         <div className="comment-content">
                           <div className="comment-header">
-                            <span className="comment-author" data-no-translate>{comment.author || comment.author_display_name || 'User'}</span>
-                            <span className="comment-time" data-no-translate>{comment.timestamp || (comment.created_at ? new Date(comment.created_at).toLocaleString() : '')}</span>
+                            <span className="comment-author" data-no-translate>
+                              {comment.author ||
+                                comment.author_display_name ||
+                                comment.authorDisplayName ||
+                                'User'}
+                            </span>
+                            <span className="comment-time" data-no-translate>
+                              {comment.timestamp ||
+                                ((comment.created_at || comment.createdAt)
+                                  ? new Date(comment.created_at || comment.createdAt).toLocaleString()
+                                  : '')}
+                            </span>
+                            {(comment.editedAt || comment.edited_at) && (
+                              <span className="comment-edited-flag" data-no-translate>
+                                {' '}
+                                (edited)
+                              </span>
+                            )}
                             {(user?.role === 'admin' || user?.isAdmin) && (
-                              <span className="comment-admin-actions" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                              <span
+                                className="comment-admin-actions"
+                                style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}
+                              >
                                 {editingId === comment.id ? (
                                   <>
                                     <button
@@ -544,13 +560,20 @@
                                     >
                                       {editLoading ? 'Saving…' : 'Save'}
                                     </button>
-                                    <button onClick={cancelEdit} className="comment-cancel-btn">Cancel</button>
+                                    <button onClick={cancelEdit} className="comment-cancel-btn">
+                                      Cancel
+                                    </button>
                                   </>
                                 ) : (
                                   <>
-                                    <button onClick={() => startEdit(comment)} className="comment-edit-btn">Edit</button>
                                     <button
-                                      onClick={() => deleteComment(comment.id)}
+                                      onClick={() => startEdit(comment)}
+                                      className="comment-edit-btn"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteComment(comment.id)}
                                       disabled={deleteLoadingId === comment.id}
                                       className="comment-delete-btn"
                                     >
@@ -570,7 +593,9 @@
                               onChange={(e) => setEditContent(e.target.value)}
                             />
                           ) : (
-                            <p className="comment-text">{comment.content || comment.body}</p>
+                            <p className="comment-text">
+                              {comment.content || comment.body}
+                            </p>
                           )}
                         </div>
                       </div>
