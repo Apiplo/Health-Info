@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { fetchTags as fetchAllTags } from '../../services/tagService';
+import { fetchCategories as fetchAllCategories } from '../../services/categoryService';
 
 const apiBase = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
 
@@ -41,6 +42,9 @@ export default function AdminArticles() {
   const [allTags, setAllTags] = useState([]);
   const [tagsLoading, setTagsLoading] = useState(false);
   const [tagsError, setTagsError] = useState('');
+  const [allCategories, setAllCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [categoriesError, setCategoriesError] = useState('');
   const tagFilter = (searchParams.get('tag') || '').trim().toLowerCase();
 
   // Load all articles
@@ -88,6 +92,35 @@ export default function AdminArticles() {
     }
 
     loadAllTags();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+ 
+  // Load category list for category picker
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadAllCategories() {
+      setCategoriesLoading(true);
+      setCategoriesError('');
+      try {
+        const data = await fetchAllCategories({ lang: 'en' });
+        if (!ignore) {
+          setAllCategories(Array.isArray(data) ? data : []);
+        }
+      } catch (e) {
+        if (!ignore) {
+          setCategoriesError(e.message || 'Failed to load categories');
+        }
+      } finally {
+        if (!ignore) {
+          setCategoriesLoading(false);
+        }
+      }
+    }
+
+    loadAllCategories();
     return () => {
       ignore = true;
     };
@@ -231,6 +264,7 @@ export default function AdminArticles() {
       tags: '',
       image_url: '',
       media_urls_raw: '',
+      category_id: null,
       category_code: '',
       language: 'en'
     });
@@ -246,12 +280,14 @@ export default function AdminArticles() {
     const mediaRaw = Array.isArray(mediaArray) ? mediaArray.join('\n') : '';
     const language = item.language_code || item.language || 'en';
     const categoryCode = item.category_code || item.category || '';
-
+    const categoryId = item.category_id || item.categoryId || null;
+ 
     setEditing({
       ...item,
       image_url: normalizedImageUrl,
       tags: tagsString,
       media_urls_raw: mediaRaw,
+      category_id: categoryId,
       category_code: categoryCode,
       language
     });
@@ -321,16 +357,21 @@ export default function AdminArticles() {
 
     const tagsArray = parseTags(editing.tags);
     const { mediaUrls, imageUrl } = buildMediaPayload(editing.media_urls_raw, editing.image_url);
-
+ 
     const baseBody = {
       title: editing.title,
       content: editing.content,
       language_code: 'en',
-      category_code: editing.category_code || undefined,
       tags: tagsArray.length ? tagsArray : undefined,
       media_urls: mediaUrls.length ? mediaUrls : undefined,
       image_url: imageUrl || undefined
     };
+
+    if (editing.category_id) {
+      baseBody.category_id = editing.category_id;
+    } else if (editing.category_code) {
+      baseBody.category_code = editing.category_code;
+    }
 
     try {
       setSaving(true);
@@ -371,6 +412,12 @@ export default function AdminArticles() {
         media_urls: mediaUrls.length ? mediaUrls : undefined,
         image_url: imageUrl || undefined
       };
+
+      if (editing.category_id) {
+        bnBody.category_id = editing.category_id;
+      } else if (editing.category_code) {
+        bnBody.category_code = editing.category_code;
+      }
 
       const res2 = await fetch(`${apiBase}/articles/${articleId}`, {
         method: 'PUT',
@@ -421,6 +468,12 @@ export default function AdminArticles() {
       media_urls: mediaUrls.length ? mediaUrls : undefined,
       image_url: imageUrl || undefined
     };
+
+    if (editing.category_id) {
+      payload.category_id = editing.category_id;
+    } else if (editing.category_code) {
+      payload.category_code = editing.category_code;
+    }
 
     try {
       setSaving(true);
@@ -528,13 +581,44 @@ export default function AdminArticles() {
       {editing && (
         <form onSubmit={handleFormSubmit} style={{ display: 'grid', gap: 12, maxWidth: 720 }}>
           <div>
-            <label style={{ display: 'block', fontSize: 14, color: '#6b7280', marginBottom: 6 }}>Category code (optional)</label>
-            <input
-              value={editing.category_code || ''}
-              onChange={e => setEditing({ ...editing, category_code: e.target.value })}
-              placeholder="e.g., climate, health, technology, sport"
-              style={{ width: '100%', padding: 8, border: '1px solid #e5e7eb', borderRadius: 6 }}
-            />
+            <label style={{ display: 'block', fontSize: 14, color: '#6b7280', marginBottom: 6 }}>Category (optional)</label>
+            {categoriesError && (
+              <div style={{ fontSize: 12, color: '#b91c1c', marginBottom: 4 }}>
+                {categoriesError} — you can still publish without a category.
+              </div>
+            )}
+            <select
+              value={editing.category_id || ''}
+              onChange={e => {
+                const value = e.target.value;
+                if (!value) {
+                  setEditing({ ...editing, category_id: null });
+                } else {
+                  const idNum = Number(value);
+                  const selected = allCategories.find(c => c.id === idNum);
+                  setEditing({
+                    ...editing,
+                    category_id: idNum,
+                    // Preserve existing code as a fallback if available
+                    category_code: selected && selected.code
+                      ? selected.code
+                      : (editing.category_code || '')
+                  });
+                }
+              }}
+              disabled={categoriesLoading}
+              style={{ width: '100%', padding: 8, border: '1px solid #e5e7eb', borderRadius: 6, background: '#fff' }}
+            >
+              <option value="">No category</option>
+              {allCategories.map(cat => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name_en}
+                </option>
+              ))}
+            </select>
+            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+              Choose a high-level category like Health, Technology, or Sport. This helps group articles in the admin and on the site.
+            </div>
           </div>
           <div>
             <label style={{ display: 'block', fontSize: 14, color: '#6b7280', marginBottom: 6 }}>Tags</label>
