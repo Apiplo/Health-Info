@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { fetchTags as fetchAllTags } from '../../services/tagService';
 import { fetchCategories as fetchAllCategories } from '../../services/categoryService';
+import { useSearchParams } from 'react-router-dom';
+import AdminLayout from './AdminLayout';
 
 const apiBase = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
 
@@ -43,6 +45,7 @@ export default function AdminArticles() {
   const [allCategories, setAllCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [categoriesError, setCategoriesError] = useState('');
+  const [searchParams] = useSearchParams();
   const tagFilter = (searchParams.get('tag') || '').trim().toLowerCase();
 
   // Load all articles

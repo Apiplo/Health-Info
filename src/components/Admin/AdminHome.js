@@ -115,59 +115,60 @@ export default function AdminHome() {
             </div>
           </Link>
 
-        <Link to="/admin/users" style={{ textDecoration: 'none' }}>
-          <div style={{
-            background: '#2563eb',
-            color: '#fff',
-            padding: 24,
-            borderRadius: 12,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-            height: '100%',
-            boxSizing: 'border-box'
-          }}>
-            <div style={{ fontSize: 18, fontWeight: 600 }}>User Manager</div>
-            <div style={{ fontSize: 14, opacity: 0.8 }}>Manage users, roles, and permissions.</div>
-            <div style={{ marginTop: 'auto', fontWeight: 500 }}>Manage Users →</div>
-          </div>
-        </Link>
+          <Link to="/admin/users" style={{ textDecoration: 'none' }}>
+            <div style={{
+              background: '#2563eb',
+              color: '#fff',
+              padding: 24,
+              borderRadius: 12,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              height: '100%',
+              boxSizing: 'border-box'
+            }}>
+              <div style={{ fontSize: 18, fontWeight: 600 }}>User Manager</div>
+              <div style={{ fontSize: 14, opacity: 0.8 }}>Manage users, roles, and permissions.</div>
+              <div style={{ marginTop: 'auto', fontWeight: 500 }}>Manage Users →</div>
+            </div>
+          </Link>
 
-        <Link to="/admin/tags" style={{ textDecoration: 'none' }}>
-          <div style={{
-            background: '#059669',
-            color: '#fff',
-            padding: 24,
-            borderRadius: 12,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-            height: '100%',
-            boxSizing: 'border-box'
-          }}>
-            <div style={{ fontSize: 18, fontWeight: 600 }}>Tag Manager</div>
-            <div style={{ fontSize: 14, opacity: 0.8 }}>Add and rename the tags used across articles.</div>
-            <div style={{ marginTop: 'auto', fontWeight: 500 }}>Manage Tags →</div>
-          </div>
-        </Link>
+          <Link to="/admin/tags" style={{ textDecoration: 'none' }}>
+            <div style={{
+              background: '#059669',
+              color: '#fff',
+              padding: 24,
+              borderRadius: 12,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              height: '100%',
+              boxSizing: 'border-box'
+            }}>
+              <div style={{ fontSize: 18, fontWeight: 600 }}>Tag Manager</div>
+              <div style={{ fontSize: 14, opacity: 0.8 }}>Add and rename the tags used across articles.</div>
+              <div style={{ marginTop: 'auto', fontWeight: 500 }}>Manage Tags →</div>
+            </div>
+          </Link>
 
-        <Link to="/admin/categories" style={{ textDecoration: 'none' }}>
-          <div style={{
-            background: '#7c3aed',
-            color: '#fff',
-            padding: 24,
-            borderRadius: 12,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-            height: '100%',
-            boxSizing: 'border-box'
-          }}>
-            <div style={{ fontSize: 18, fontWeight: 600 }}>Category Manager</div>
-            <div style={{ fontSize: 14, opacity: 0.8 }}>Define the high-level categories used to group articles.</div>
-            <div style={{ marginTop: 'auto', fontWeight: 500 }}>Manage Categories →</div>
-          </div>
-        </Link>
+          <Link to="/admin/categories" style={{ textDecoration: 'none' }}>
+            <div style={{
+              background: '#7c3aed',
+              color: '#fff',
+              padding: 24,
+              borderRadius: 12,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              height: '100%',
+              boxSizing: 'border-box'
+            }}>
+              <div style={{ fontSize: 18, fontWeight: 600 }}>Category Manager</div>
+              <div style={{ fontSize: 14, opacity: 0.8 }}>Define the high-level categories used to group articles.</div>
+              <div style={{ marginTop: 'auto', fontWeight: 500 }}>Manage Categories →</div>
+            </div>
+          </Link>
+        </div>
       </div>
     </AdminLayout>
   );
