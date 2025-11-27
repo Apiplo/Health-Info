@@ -8,7 +8,7 @@ import './Register.css';
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    username: '',
+    displayName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -17,8 +17,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const registerRef = useTranslation();
-  // In a real app, you would have a register function in your context
-  // const { register } = useAuth(); 
+  const { register } = useAuth(); 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,11 +34,9 @@ const Register = () => {
     setError('');
 
     try {
-      console.log('Registering user:', formData.username);
-      await new Promise(res => setTimeout(res, 1000));
-      // await register(formData.username, formData.email, formData.password);
-      alert('Registration successful! Please log in.');
-      navigate('/login');
+      await register(formData.email, formData.password, formData.displayName);
+      alert('Registration successful! You are now logged in.');
+      navigate('/');
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');
     } finally {
@@ -56,9 +53,9 @@ const Register = () => {
             <input
               className="input"
               type="text"
-              name="username"
-              placeholder="Username"
-              value={formData.username}
+              name="displayName"
+              placeholder="Display Name"
+              value={formData.displayName}
               onChange={handleChange}
               required
             />

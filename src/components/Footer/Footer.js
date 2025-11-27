@@ -44,7 +44,7 @@ const Footer = () => {
           <div className="footer-col">
             <h4>Products</h4>
             <ul>
-              <li><a href="#">Health Info</a></li>
+              <li><a href="#">BlogInfo</a></li>
               <li><a href="#">AI Summaries</a></li>
               <li><a href="#">Language Support</a></li>
               <li><a href="#">For Clinics</a></li>
@@ -65,7 +65,7 @@ const Footer = () => {
             <h4>Contact</h4>
             <ul className="contact-list">
               <li>New York, NY 10012, US</li>
-              <li>info@healthinfo.example</li>
+              <li>info@bloginfo.example</li>
               <li>+ 01 234 567 88</li>
               <li>+ 01 234 567 89</li>
             </ul>
@@ -76,7 +76,7 @@ const Footer = () => {
       {/* Bottom section: Copyright notice */}
       <div className="footer-bottom">
         <div className="footer-container">
-          <span>© {year} Health Info. All rights reserved.</span>
+          <span>© {year} BlogInfo. All rights reserved.</span>
         </div>
       </div>
     </footer>

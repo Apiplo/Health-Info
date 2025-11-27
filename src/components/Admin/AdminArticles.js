@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { fetchTags as fetchAllTags } from '../../services/tagService';
+import AdminLayout from './AdminLayout';
 
 const apiBase = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
 
@@ -27,7 +26,6 @@ function ArticleRow({ item, onEdit, onDelete }) {
 
 export default function AdminArticles() {
   const { token } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -38,10 +36,6 @@ export default function AdminArticles() {
   const [existingLoading, setExistingLoading] = useState(false);
   const [existingError, setExistingError] = useState('');
   const [saving, setSaving] = useState(false);
-  const [allTags, setAllTags] = useState([]);
-  const [tagsLoading, setTagsLoading] = useState(false);
-  const [tagsError, setTagsError] = useState('');
-  const tagFilter = (searchParams.get('tag') || '').trim().toLowerCase();
 
   // Load all articles
   async function load() {
@@ -63,35 +57,6 @@ export default function AdminArticles() {
   }
 
   useEffect(() => { load(); }, []); // initial load
-
-  // Load tag list for friendly tag selection
-  useEffect(() => {
-    let ignore = false;
-
-    async function loadAllTags() {
-      setTagsLoading(true);
-      setTagsError('');
-      try {
-        const data = await fetchAllTags({ lang: 'en' });
-        if (!ignore) {
-          setAllTags(Array.isArray(data) ? data : []);
-        }
-      } catch (e) {
-        if (!ignore) {
-          setTagsError(e.message || 'Failed to load tags');
-        }
-      } finally {
-        if (!ignore) {
-          setTagsLoading(false);
-        }
-      }
-    }
-
-    loadAllTags();
-    return () => {
-      ignore = true;
-    };
-  }, []);
 
   // When selecting an article + target language, load existing translation text (for editing existing)
   useEffect(() => {
@@ -170,27 +135,12 @@ export default function AdminArticles() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-
+    if (!q) return items;
     return items.filter(a => {
       const idText = String(a.id || a._id || '').toLowerCase();
       const titleText = (a.title || '').toLowerCase();
-      const rawTagsValue = Array.isArray(a.tags) ? a.tags.join(',') : (a.tags || '');
-      const tagsArray = parseTags(rawTagsValue);
+      const tagsText = (Array.isArray(a.tags) ? a.tags.join(',') : (a.tags || '')).toLowerCase();
       const langText = (a.language_code || a.language || '').toLowerCase();
-
-      if (tagFilter) {
-        const hasTag = tagsArray.some(t => String(t).toLowerCase() === tagFilter);
-        if (!hasTag) {
-          return false;
-        }
-      }
-
-      if (!q) {
-        return true;
-      }
-
-      const tagsText = rawTagsValue.toLowerCase();
-
       return (
         idText.includes(q) ||
         titleText.includes(q) ||
@@ -198,7 +148,7 @@ export default function AdminArticles() {
         langText.includes(q)
       );
     });
-  }, [items, query, tagFilter]);
+  }, [items, query]);
 
   async function handleDelete(item) {
     if (!item?.id && !item?._id) return;
@@ -214,14 +164,6 @@ export default function AdminArticles() {
     } catch (e) {
       alert(e.message || 'Delete failed');
     }
-  }
-
-  function handleClearTagFilter() {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      next.delete('tag');
-      return next;
-    });
   }
 
   function startCreate() {
@@ -263,16 +205,6 @@ export default function AdminArticles() {
       .split(',')
       .map(t => t.trim())
       .filter(Boolean);
-  }
-
-  function toggleTagCode(code) {
-    setEditing(prev => {
-      if (!prev) return prev;
-      const current = parseTags(prev.tags);
-      const exists = current.includes(code);
-      const next = exists ? current.filter(t => t !== code) : [...current, code];
-      return { ...prev, tags: next.join(',') };
-    });
   }
 
   /**
@@ -452,7 +384,8 @@ export default function AdminArticles() {
   const isEditingExisting = !!(editing && (editing.id || editing._id));
 
   return (
-    <div style={{ maxWidth: 1100, margin: '24px auto', padding: '0 16px' }}>
+    <AdminLayout>
+      <div style={{ maxWidth: 1100, margin: '24px auto', padding: '0 16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <h1 style={{ fontSize: 24 }}>Article Manager</h1>
         <div>
@@ -471,30 +404,6 @@ export default function AdminArticles() {
         />
         <button onClick={load}>Refresh</button>
       </div>
-
-      {tagFilter && (
-        <div style={{ marginBottom: 12, fontSize: 13, color: '#374151' }}>
-          Showing articles with tag:{' '}
-          <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: 4 }}>
-            {tagFilter}
-          </code>
-          <button
-            type="button"
-            onClick={handleClearTagFilter}
-            style={{
-              marginLeft: 8,
-              fontSize: 12,
-              color: '#2563eb',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              textDecoration: 'underline'
-            }}
-          >
-            Clear
-          </button>
-        </div>
-      )}
 
       {loading && <div>Loading…</div>}
       {error && <div style={{ color: '#b91c1c', marginBottom: 12 }}>{error}</div>}
@@ -537,49 +446,13 @@ export default function AdminArticles() {
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: 14, color: '#6b7280', marginBottom: 6 }}>Tags</label>
+            <label style={{ display: 'block', fontSize: 14, color: '#6b7280', marginBottom: 6 }}>Tags (comma-separated, e.g., environment,bangladesh)</label>
             <input
               value={editing.tags || ''}
               onChange={e => setEditing({ ...editing, tags: e.target.value })}
-              placeholder="Start typing, or click a tag below to add it"
+              placeholder="environment,bangladesh"
               style={{ width: '100%', padding: 8, border: '1px solid #e5e7eb', borderRadius: 6 }}
             />
-            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
-              Tags help group related articles together.
-            </div>
-            {tagsError && (
-              <div style={{ fontSize: 12, color: '#b91c1c', marginTop: 4 }}>
-                {tagsError}
-              </div>
-            )}
-            <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {tagsLoading && (
-                <span style={{ fontSize: 12, color: '#6b7280' }}>Loading tag suggestions…</span>
-              )}
-              {!tagsLoading &&
-                allTags.map(tag => {
-                  const current = parseTags(editing?.tags);
-                  const isSelected = current.includes(tag.code);
-                  return (
-                    <button
-                      key={tag.code}
-                      type="button"
-                      onClick={() => toggleTagCode(tag.code)}
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: 999,
-                        border: isSelected ? '1px solid #111827' : '1px solid #d1d5db',
-                        background: isSelected ? '#111827' : '#f9fafb',
-                        color: isSelected ? '#fff' : '#374151',
-                        fontSize: 12,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {tag.name_en || tag.code}
-                    </button>
-                  );
-                })}
-            </div>
           </div>
           <div>
             <label style={{ display: 'block', fontSize: 14, color: '#6b7280', marginBottom: 6 }}>Main image URL (optional)</label>
@@ -735,6 +608,7 @@ https://youtu.be/abcd1234`}
           </div>
         </form>
       )}
-    </div>
+      </div>
+    </AdminLayout>
   );
 }

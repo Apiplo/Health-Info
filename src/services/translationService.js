@@ -65,7 +65,7 @@ class TranslationService {
   getFallbackTranslation(text, targetLang) {
     const translations = {
       'en_to_bn': {
-        'HealthInfo': 'স্বাস্থ্য তথ্য',
+        'BlogInfo': 'ব্লগ তথ্য',
         'Health': 'স্বাস্থ্য',
         'Technology': 'প্রযুক্তি',
         'Sport': 'খেলাধুলা',
@@ -84,7 +84,7 @@ class TranslationService {
         'Save 30% this month. Schedule a preventive heart screening and take control of your health.': 'এই মাসে ৩০% সাশ্রয় করুন। প্রতিরোধমূলক হার্ট স্ক্রিনিং এর সময় নির্ধারণ করুন এবং আপনার স্বাস্থ্যের নিয়ন্ত্রণ নিন।'
       },
       'bn_to_en': {
-        'স্বাস্থ্য তথ্য': 'HealthInfo',
+        'ব্লগ তথ্য': 'BlogInfo',
         'স্বাস্থ্য': 'Health',
         'প্রযুক্তি': 'Technology',
         'খেলাধুলা': 'Sport',

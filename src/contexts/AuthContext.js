@@ -55,6 +55,38 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+    // Function to handle user registration
+  const register = async (email, password, displayName) => {
+    try {
+      // Direct fetch to backend registration endpoint
+      const response = await fetch(`${apiBase}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, displayName }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      // Expecting { token, user }
+      if (data?.token) {
+        localStorage.setItem('token', data.token);
+        setToken(data.token);
+      }
+      setIsAuthenticated(true);
+      setUser(data?.user || null);
+      return data;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw error;
+    }
+  };
+
     // Function to handle user logout
   const logout = () => {
     setIsAuthenticated(false);
@@ -69,6 +101,7 @@ export const AuthProvider = ({ children }) => {
     user,
     token,
     login,
+    register,
     logout,
     isAdmin: () => user?.role === 'admin'
   };
