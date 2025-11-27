@@ -47,13 +47,26 @@ export default function AdminArticles() {
   const [categoriesError, setCategoriesError] = useState('');
   const [searchParams] = useSearchParams();
   const tagFilter = (searchParams.get('tag') || '').trim().toLowerCase();
+  const langFilter = (searchParams.get('lang') || '').trim().toLowerCase() || 'en';
 
-  // Load all articles
+  // Load all articles (optionally filtered by tag/lang from URL)
   async function load() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`${apiBase}/articles`, {
+      const params = new URLSearchParams();
+
+      if (tagFilter) {
+        params.set('tag', tagFilter);
+      }
+      if (langFilter) {
+        params.set('lang', langFilter);
+      }
+
+      const queryString = params.toString();
+      const url = queryString ? `${apiBase}/articles?${queryString}` : `${apiBase}/articles`;
+
+      const res = await fetch(url, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined
       });
       if (!res.ok) throw new Error(`Failed to fetch (${res.status})`);
@@ -67,7 +80,10 @@ export default function AdminArticles() {
     }
   }
 
-  useEffect(() => { load(); }, []); // initial load
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tagFilter, langFilter]); // reload when URL tag/lang changes
 
   // Load tag list for friendly tag selection
   useEffect(() => {
@@ -204,8 +220,19 @@ export default function AdminArticles() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter(a => {
+
+    let base = items;
+
+    if (tagFilter) {
+      base = base.filter(a => {
+        const tagsText = (Array.isArray(a.tags) ? a.tags.join(',') : (a.tags || '')).toLowerCase();
+        return tagsText.includes(tagFilter);
+      });
+    }
+
+    if (!q) return base;
+
+    return base.filter(a => {
       const idText = String(a.id || a._id || '').toLowerCase();
       const titleText = (a.title || '').toLowerCase();
       const tagsText = (Array.isArray(a.tags) ? a.tags.join(',') : (a.tags || '')).toLowerCase();
@@ -217,7 +244,7 @@ export default function AdminArticles() {
         langText.includes(q)
       );
     });
-  }, [items, query]);
+  }, [items, query, tagFilter]);
 
   async function handleDelete(item) {
     if (!item?.id && !item?._id) return;

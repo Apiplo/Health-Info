@@ -18,6 +18,7 @@ import AdminUsers from './components/Admin/AdminUsers';
 import AdminTags from './components/Admin/AdminTags';
 import AdminCategories from './components/Admin/AdminCategories';
 import AdminCategoryArticles from './components/Admin/AdminCategoryArticles';
+import AdminHealth from './components/Admin/AdminHealth';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -68,6 +69,11 @@ function AppContent() {
         <Route path="/admin" element={
           <AdminRoute>
             <AdminHome />
+          </AdminRoute>
+        } />
+        <Route path="/admin/health" element={
+          <AdminRoute>
+            <AdminHealth />
           </AdminRoute>
         } />
         <Route path="/admin/articles" element={

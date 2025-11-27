@@ -6,6 +6,7 @@ export default function AdminNav() {
 
   const navItems = [
     { path: '/admin', label: 'Dashboard', icon: '📊' },
+    { path: '/admin/health', label: 'Health', icon: '❤️' },
     { path: '/admin/articles', label: 'Articles', icon: '📝' },
     { path: '/admin/users', label: 'Users', icon: '👥' }
   ];
