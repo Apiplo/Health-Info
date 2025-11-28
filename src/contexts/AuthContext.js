@@ -16,13 +16,32 @@ export const useAuth = () => {
   return context;
 };
 
+const getInitialToken = () => {
+  try {
+    return localStorage.getItem('token') || null;
+  } catch (error) {
+    console.error('Failed to read token from localStorage:', error);
+    return null;
+  }
+};
+
+const getInitialUser = () => {
+  try {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch (error) {
+    console.error('Failed to parse user from localStorage:', error);
+    return null;
+  }
+};
+
 // Component that provides authentication state to its children
 export const AuthProvider = ({ children }) => {
     // State to track whether the user is authenticated
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState(getInitialToken);
     // State to store the authenticated user's data
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
+  const [user, setUser] = useState(getInitialUser);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!getInitialToken());
 
     // Function to handle user login
   const login = async (email, password) => {
@@ -45,6 +64,13 @@ export const AuthProvider = ({ children }) => {
       if (data?.token) {
         localStorage.setItem('token', data.token);
         setToken(data.token);
+      }
+      if (data?.user) {
+        try {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        } catch (error) {
+          console.error('Failed to store user in localStorage:', error);
+        }
       }
       setIsAuthenticated(true);
       setUser(data?.user || null);
@@ -78,6 +104,13 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', data.token);
         setToken(data.token);
       }
+      if (data?.user) {
+        try {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        } catch (error) {
+          console.error('Failed to store user in localStorage:', error);
+        }
+      }
       setIsAuthenticated(true);
       setUser(data?.user || null);
       return data;
@@ -92,7 +125,12 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     setUser(null);
     setToken(null);
-    localStorage.removeItem('token');
+    try {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    } catch (error) {
+      console.error('Failed to clear auth from localStorage:', error);
+    }
   };
 
     // The value provided to the context consumers
