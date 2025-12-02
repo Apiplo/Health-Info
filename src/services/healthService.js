@@ -17,7 +17,7 @@ async function handleJsonResponse(res) {
     const message =
       errorPayload.error ||
       errorPayload.message ||
-      `Request failed with status ${res.status}`;
+      `Server request failed. Please try again later. (Error ${res.status})`;
     const error = new Error(message);
     error.status = res.status;
     error.details = errorPayload;

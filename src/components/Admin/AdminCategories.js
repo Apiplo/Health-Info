@@ -114,11 +114,11 @@ function validateCategoryForm(values) {
   const rawNameEn = (values.name_en || '').trim();
 
   if (!rawNameEn) {
-    errors.name_en = 'English name is required.';
+    errors.name_en = 'Please provide an English name for this category.';
   } else if (rawNameEn.length < 2) {
-    errors.name_en = 'English name is too short.';
+    errors.name_en = 'Category name is too short. Please use at least 2 characters.';
   } else if (rawNameEn.length > 100) {
-    errors.name_en = 'English name is too long.';
+    errors.name_en = 'Category name is too long. Please use fewer than 100 characters.';
   }
 
   return errors;
@@ -148,7 +148,7 @@ export default function AdminCategories() {
       const data = await fetchCategories({ lang: currentLanguage || 'en' });
       setCategories(Array.isArray(data) ? data : []);
     } catch (e) {
-      setListError(e.message || 'Failed to load categories.');
+      setListError(e.message || 'Unable to load categories. Please refresh the page and try again.');
     } finally {
       setLoadingList(false);
     }
@@ -252,8 +252,8 @@ export default function AdminCategories() {
       const message =
         (e && e.message) ||
         (dialog.mode === 'create'
-          ? 'Could not create category. Please try again.'
-          : 'Could not update category. Please try again.');
+          ? 'Unable to create category. Please check your information and try again.'
+          : 'Unable to update category. Please check your information and try again.');
       alert(message);
     } finally {
       setSaving(false);
@@ -275,7 +275,7 @@ export default function AdminCategories() {
       setCategories((prev) => prev.filter((c) => c.id !== category.id));
     } catch (e) {
       const message =
-        (e && e.message) || 'Could not delete this category. Please try again.';
+        (e && e.message) || 'Unable to delete this category. Please try again later.';
       alert(message);
     } finally {
       setDeleteBusyId(null);

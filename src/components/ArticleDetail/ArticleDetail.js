@@ -112,12 +112,20 @@
         // Fetch the article for the selected language using path parameter form: /api/articles/:id/:lang
         const response = await fetch(`${apiBase}/articles/${id}/${currentLanguage}`);
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          let errorMessage = 'Unable to load this article.';
+          if (response.status === 404) {
+            errorMessage = 'This article cannot be found. It may have been removed or the link is incorrect.';
+          } else if (response.status === 403) {
+            errorMessage = 'You don\'t have permission to view this article.';
+          } else if (response.status === 500) {
+            errorMessage = 'Server error occurred while loading the article. Please try again later.';
+          }
+          throw new Error(errorMessage);
         }
         const data = await response.json();
         setArticle(data);
       } catch (err) {
-        setError('Failed to load article.');
+        setError('Unable to load this article. Please refresh the page and try again.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -278,7 +286,7 @@
       } catch (err) {
         console.error('Failed to load comments:', err);
         if (!cancelled) {
-          setCommentError(err.message || 'Failed to load comments.');
+          setCommentError(err.message || 'Unable to load comments. Please refresh the page and try again.');
         }
       } finally {
         if (!cancelled) {
@@ -309,7 +317,7 @@
       setNewComment('');
     } catch (err) {
       console.error('Failed to submit comment:', err);
-      setCommentError(err.message || 'Failed to post comment.');
+      setCommentError(err.message || 'Unable to post your comment. Please try again later.');
     } finally {
       setCommentLoading(false);
     }
@@ -341,7 +349,7 @@
       setEditContent('');
     } catch (e) {
       console.error('Failed to update comment:', e);
-      setCommentError(e.message || 'Failed to update comment.');
+      setCommentError(e.message || 'Unable to save your changes. Please try again later.');
     } finally {
       setEditLoading(false);
     }
@@ -356,7 +364,7 @@
       setComments((prev) => prev.filter((c) => String(c.id) !== String(commentId)));
     } catch (e) {
       console.error('Failed to delete comment:', e);
-      setCommentError(e.message || 'Failed to delete comment.');
+      setCommentError(e.message || 'Unable to delete this comment. Please try again later.');
     } finally {
       setDeleteLoadingId(null);
     }

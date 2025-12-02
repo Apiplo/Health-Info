@@ -69,12 +69,22 @@ export default function AdminArticles() {
       const res = await fetch(url, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined
       });
-      if (!res.ok) throw new Error(`Failed to fetch (${res.status})`);
+      if (!res.ok) {
+        let errorMessage = 'Unable to load articles.';
+        if (res.status === 401) {
+          errorMessage = 'Your session has expired. Please log in again.';
+        } else if (res.status === 403) {
+          errorMessage = 'You don\'t have permission to view articles.';
+        } else if (res.status === 500) {
+          errorMessage = 'Server error occurred while loading articles. Please try again later.';
+        }
+        throw new Error(errorMessage);
+      }
       const data = await res.json();
       const list = Array.isArray(data) ? data : (data.items || []);
       setItems(list);
     } catch (e) {
-      setError(e.message || 'Failed to load');
+      setError(e.message || 'Unable to load articles. Please refresh the page and try again.');
     } finally {
       setLoading(false);
     }
@@ -99,7 +109,7 @@ export default function AdminArticles() {
         }
       } catch (e) {
         if (!ignore) {
-          setTagsError(e.message || 'Failed to load tags');
+          setTagsError(e.message || 'Unable to load tags. Please refresh the page and try again.');
         }
       } finally {
         if (!ignore) {
@@ -128,7 +138,7 @@ export default function AdminArticles() {
         }
       } catch (e) {
         if (!ignore) {
-          setCategoriesError(e.message || 'Failed to load categories');
+          setCategoriesError(e.message || 'Unable to load categories. Please refresh the page and try again.');
         }
       } finally {
         if (!ignore) {
@@ -168,7 +178,15 @@ export default function AdminArticles() {
         return;
       }
       if (!res.ok) {
-        throw new Error(`Failed to load translation (${res.status})`);
+        let errorMessage = 'Unable to load article translation.';
+        if (res.status === 404) {
+          errorMessage = 'No translation found for this article in the selected language.';
+        } else if (res.status === 401) {
+          errorMessage = 'Your session has expired. Please log in again.';
+        } else if (res.status === 403) {
+          errorMessage = 'You don\'t have permission to view this translation.';
+        }
+        throw new Error(errorMessage);
       }
       const data = await res.json();
       let t = data?.translation || data?.result || data?.data || data;
@@ -184,7 +202,7 @@ export default function AdminArticles() {
       setExistingTranslation(t || null);
       setTranslation(prev => ({ ...prev, lang, ...mapped }));
     } catch (e) {
-      setExistingError(e.message || 'Failed to load translation');
+      setExistingError(e.message || 'Unable to load translation. Please try again later.');
     } finally {
       setExistingLoading(false);
     }
@@ -195,7 +213,7 @@ export default function AdminArticles() {
     try {
       const id = editing?.id || editing?._id;
       if (!id) {
-        alert('Please select an article first.');
+        alert('Please select an article from the list before editing translations.');
         return;
       }
       const body = {};
@@ -210,11 +228,21 @@ export default function AdminArticles() {
         },
         body: JSON.stringify(body)
       });
-      if (!res.ok) throw new Error(`Translation save failed (${res.status})`);
+      if (!res.ok) {
+        let errorMessage = 'Unable to save translation.';
+        if (res.status === 401) {
+          errorMessage = 'Your session has expired. Please log in again.';
+        } else if (res.status === 403) {
+          errorMessage = 'You don\'t have permission to edit translations.';
+        } else if (res.status === 404) {
+          errorMessage = 'This article cannot be found. It may have been deleted.';
+        }
+        throw new Error(errorMessage);
+      }
       alert('Translation saved');
       await load();
     } catch (e) {
-      alert(e.message || 'Failed to save translation');
+      alert(e.message || 'Unable to save translation. Please try again later.');
     }
   }
 
@@ -256,9 +284,19 @@ export default function AdminArticles() {
         method: 'DELETE',
         headers: token ? { Authorization: `Bearer ${token}` } : undefined
       });
-      if (!res.ok) throw new Error('Delete failed');
+      if (!res.ok) {
+        let errorMessage = 'Unable to delete article.';
+        if (res.status === 401) {
+          errorMessage = 'Your session has expired. Please log in again.';
+        } else if (res.status === 403) {
+          errorMessage = 'You don\'t have permission to delete articles.';
+        } else if (res.status === 404) {
+          errorMessage = 'This article cannot be found. It may have already been deleted.';
+        }
+        throw new Error(errorMessage);
+      }
     } catch (e) {
-      alert(e.message || 'Delete failed');
+      alert(e.message || 'Unable to delete article. Please try again later.');
     }
   }
 
@@ -342,11 +380,11 @@ export default function AdminArticles() {
     if (!editing) return;
 
     if (!editing.title || !editing.content) {
-      alert('English title and content are required.');
+      alert('Please provide both English title and content before publishing.');
       return;
     }
     if (!translation.title || !translation.content) {
-      alert('Bangla title and content are required to publish a bilingual article.');
+      alert('Please provide both Bangla title and content to publish a bilingual article.');
       return;
     }
 
@@ -395,7 +433,7 @@ export default function AdminArticles() {
       const created = await res1.json();
       const articleId = created.id || created._id;
       if (!articleId) {
-        alert('Article created but no ID returned from server.');
+        alert('Article was created successfully, but we encountered an issue. Please refresh to see it in the list.');
         return;
       }
 
@@ -424,14 +462,14 @@ export default function AdminArticles() {
       });
 
       if (!res2.ok) {
-        let message = `Article created in English, but Bangla translation failed (${res2.status}).`;
+        let message = `Article was created in English, but we couldn\'t save the Bangla translation (${res2.status}).`;
         try {
           const err = await res2.json();
           if (err?.error) message = `Article created in English, but Bangla translation failed: ${err.error}`;
         } catch {
           // ignore
         }
-        alert(message);
+        alert(message + ' You can edit the article later to add the translation.');
       } else {
         alert('Bilingual article published (English + Bangla).');
       }
@@ -440,7 +478,7 @@ export default function AdminArticles() {
       setEditing(null);
       setTranslation({ lang: 'bn', title: '', content: '', excerpt: '' });
     } catch (e) {
-      alert(e.message || 'Failed to create article');
+      alert(e.message || 'Unable to create article. Please check your information and try again.');
     } finally {
       setSaving(false);
     }
@@ -480,11 +518,21 @@ export default function AdminArticles() {
         },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error('Save failed');
+      if (!res.ok) {
+        let errorMessage = 'Unable to save article changes.';
+        if (res.status === 401) {
+          errorMessage = 'Your session has expired. Please log in again.';
+        } else if (res.status === 403) {
+          errorMessage = 'You don\'t have permission to edit this article.';
+        } else if (res.status === 404) {
+          errorMessage = 'This article cannot be found. It may have been deleted.';
+        }
+        throw new Error(errorMessage);
+      }
       await load();
       setEditing(null);
     } catch (e) {
-      alert(e.message || 'Save failed');
+      alert(e.message || 'Unable to save your changes. Please try again later.');
     } finally {
       setSaving(false);
     }

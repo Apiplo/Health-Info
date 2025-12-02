@@ -19,9 +19,9 @@ const ForgotPassword = () => {
     try {
       console.log('Sending password reset link to:', email);
       await new Promise(res => setTimeout(res, 1000));
-      setMessage('If an account with that email exists, a password reset link has been sent.');
+      setMessage('If an account with that email exists, we\'ve sent a password reset link to your inbox. Please check your email and follow the instructions.');
     } catch (err) {
-      setMessage('An error occurred. Please try again.');
+      setMessage('Unable to send password reset email. Please check your email address and try again later.');
     } finally {
       setIsLoading(false);
     }

@@ -43,7 +43,7 @@ const Login = () => {
         navigate('/');
       }
     } catch (err) {
-      setError(err?.message || 'An error occurred. Please try again.');
+      setError(err?.message || 'Login failed. Please check your internet connection and try again.');
     } finally {
       setIsLoading(false);
     }

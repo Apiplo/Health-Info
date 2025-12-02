@@ -93,7 +93,17 @@ export default function AdminUsers() {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error || 'Failed to fetch users');
+      if (!res.ok || !data.ok) {
+        let errorMessage = 'Unable to load users.';
+        if (res.status === 401) {
+          errorMessage = 'Your session has expired. Please log in again.';
+        } else if (res.status === 403) {
+          errorMessage = 'You don\'t have permission to view users.';
+        } else if (data.error) {
+          errorMessage = data.error;
+        }
+        throw new Error(errorMessage);
+      }
       setUsers(data.users || []);
     } catch (e) {
       setError(e.message);
@@ -130,7 +140,17 @@ export default function AdminUsers() {
         body: JSON.stringify({ isActive: !isActive })
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error || 'Failed to update status');
+      if (!res.ok || !data.ok) {
+        let errorMessage = 'Unable to update user status.';
+        if (res.status === 401) {
+          errorMessage = 'Your session has expired. Please log in again.';
+        } else if (res.status === 403) {
+          errorMessage = 'You don\'t have permission to change user status.';
+        } else if (data.error) {
+          errorMessage = data.error;
+        }
+        throw new Error(errorMessage);
+      }
       
       loadUsers();
     } catch (e) {
@@ -147,7 +167,17 @@ export default function AdminUsers() {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error || 'Failed to delete user');
+      if (!res.ok || !data.ok) {
+        let errorMessage = 'Unable to delete user.';
+        if (res.status === 401) {
+          errorMessage = 'Your session has expired. Please log in again.';
+        } else if (res.status === 403) {
+          errorMessage = 'You don\'t have permission to delete users.';
+        } else if (data.error) {
+          errorMessage = data.error;
+        }
+        throw new Error(errorMessage);
+      }
       
       loadUsers();
     } catch (e) {
@@ -197,7 +227,17 @@ export default function AdminUsers() {
           })
         });
         const data = await res.json();
-        if (!res.ok || !data.ok) throw new Error(data.error || 'Failed to update user');
+        if (!res.ok || !data.ok) {
+          let errorMessage = 'Unable to update user information.';
+          if (res.status === 401) {
+            errorMessage = 'Your session has expired. Please log in again.';
+          } else if (res.status === 403) {
+            errorMessage = 'You don\'t have permission to edit users.';
+          } else if (data.error) {
+            errorMessage = data.error;
+          }
+          throw new Error(errorMessage);
+        }
       } else {
         // Create
         const res = await fetch(`${apiBase}/auth/register`, {
@@ -212,7 +252,17 @@ export default function AdminUsers() {
           })
         });
         const data = await res.json();
-        if (!res.ok || !data.ok) throw new Error(data.error || 'Failed to create user');
+        if (!res.ok || !data.ok) {
+          let errorMessage = 'Unable to create new user.';
+          if (res.status === 400) {
+            errorMessage = 'Please check all required fields and try again.';
+          } else if (res.status === 409) {
+            errorMessage = 'A user with this email already exists.';
+          } else if (data.error) {
+            errorMessage = data.error;
+          }
+          throw new Error(errorMessage);
+        }
         
         // Update role if not reader
         if (editing.role !== 'reader' && data.user && data.user.id) {

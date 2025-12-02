@@ -27,7 +27,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match.');
+      setError('Passwords do not match. Please make sure both password fields are identical.');
       return;
     }
     setIsLoading(true);
@@ -38,7 +38,7 @@ const Register = () => {
       alert('Registration successful! You are now logged in.');
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      setError(err.message || 'Registration failed. Please check your information and try again.');
     } finally {
       setIsLoading(false);
     }

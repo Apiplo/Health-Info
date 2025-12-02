@@ -42,7 +42,7 @@ export const useSearchSuggestions = (query) => {
         }
       } catch (err) {
         // eslint-disable-next-line no-console
-        console.error('Failed to load search suggestions', err);
+        console.error('Unable to load search suggestions', err);
         if (!cancelled) {
           setSuggestions([]);
         }

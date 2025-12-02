@@ -26,7 +26,7 @@ function normalizeArticleId(articleId) {
   const raw = String(articleId ?? '').trim();
 
   if (!raw || !/^\d+$/.test(raw)) {
-    throw new Error('Invalid article ID for comments.');
+    throw new Error('Unable to load comments. The article ID is invalid or missing.');
   }
 
   return raw;
@@ -44,7 +44,7 @@ export async function fetchCommentsForArticle(articleId) {
       // Article not found or not published
       return [];
     }
-    throw new Error(`Failed to load comments (status ${res.status})`);
+    throw new Error(`Unable to load comments. The server returned an error (${res.status}). Please refresh the page and try again.`);
   }
 
   const data = await res.json();
@@ -60,10 +60,10 @@ export async function createComment(articleId, text, token) {
   const id = normalizeArticleId(articleId);
 
   if (!body) {
-    throw new Error('Comment text is required.');
+    throw new Error('Please enter a comment before posting.');
   }
   if (!token) {
-    throw new Error('You must be logged in to comment.');
+    throw new Error('Please log in to post comments.');
   }
 
   const res = await fetch(`${API_BASE}/articles/${id}/comments`, {
@@ -77,15 +77,15 @@ export async function createComment(articleId, text, token) {
 
   if (!res.ok) {
     if (res.status === 400) {
-      throw new Error('Comment text is required.');
+      throw new Error('Please enter a comment before posting.');
     }
     if (res.status === 401) {
-      throw new Error('You must be logged in to comment.');
+      throw new Error('Please log in to post comments.');
     }
     if (res.status === 404) {
-      throw new Error('Article not found or not published.');
+      throw new Error('Cannot post comments on this article. It may have been removed or is not yet published.');
     }
-    throw new Error(`Failed to create comment (status ${res.status})`);
+    throw new Error(`Unable to post your comment. Please try again later. (Error ${res.status})`);
   }
 
   const raw = await res.json();
@@ -94,10 +94,10 @@ export async function createComment(articleId, text, token) {
 
 export async function deleteComment(commentId, token) {
   if (!commentId) {
-    throw new Error('commentId is required.');
+    throw new Error('Unable to delete comment. The comment ID is missing.');
   }
   if (!token) {
-    throw new Error('Authentication required.');
+    throw new Error('Please log in to delete comments.');
   }
 
   const res = await fetch(`${API_BASE}/articles/comments/${commentId}`, {
@@ -109,28 +109,28 @@ export async function deleteComment(commentId, token) {
 
   if (!res.ok) {
     if (res.status === 401) {
-      throw new Error('Authentication required.');
+      throw new Error('Please log in to delete comments.');
     }
     if (res.status === 403) {
-      throw new Error('Only admins can delete comments.');
+      throw new Error('Only administrators can delete comments.');
     }
     if (res.status === 404) {
-      throw new Error('Comment not found or already deleted.');
+      throw new Error('This comment has already been deleted or does not exist.');
     }
-    throw new Error(`Failed to delete comment (status ${res.status})`);
+    throw new Error(`Unable to delete comment. Please try again later. (Error ${res.status})`);
   }
 }
 
 export async function editComment(commentId, newText, token) {
   const body = (newText || '').trim();
   if (!commentId) {
-    throw new Error('commentId is required.');
+    throw new Error('Unable to edit comment. The comment ID is missing.');
   }
   if (!body) {
-    throw new Error('Comment text is required.');
+    throw new Error('Please enter a comment before saving.');
   }
   if (!token) {
-    throw new Error('Authentication required.');
+    throw new Error('Please log in to edit comments.');
   }
 
   const res = await fetch(`${API_BASE}/articles/comments/${commentId}`, {
@@ -144,18 +144,18 @@ export async function editComment(commentId, newText, token) {
 
   if (!res.ok) {
     if (res.status === 400) {
-      throw new Error('Comment text is required.');
+      throw new Error('Please enter a comment before saving.');
     }
     if (res.status === 401) {
-      throw new Error('Authentication required.');
+      throw new Error('Please log in to edit comments.');
     }
     if (res.status === 403) {
-      throw new Error('Only admins can edit comments.');
+      throw new Error('Only administrators can edit comments.');
     }
     if (res.status === 404) {
-      throw new Error('Comment not found or deleted.');
+      throw new Error('This comment cannot be edited because it has been deleted or does not exist.');
     }
-    throw new Error(`Failed to edit comment (status ${res.status})`);
+    throw new Error(`Unable to save your changes. Please try again later. (Error ${res.status})`);
   }
 
   const raw = await res.json();

@@ -287,14 +287,14 @@ export async function deleteCategory({ token, id }) {
       errorPayload.error ||
       errorPayload.message ||
       (status === 400
-        ? 'Invalid category ID.'
+        ? 'Invalid category identifier provided.'
         : status === 401
-        ? 'You are not logged in or your session has expired.'
+        ? 'Your session has expired. Please log in again to delete categories.'
         : status === 403
-        ? 'You do not have permission to manage categories.'
+        ? 'You don\'t have permission to delete categories. Please contact an administrator.'
         : status === 404
-        ? 'Category not found. It may have already been deleted.'
-        : 'Failed to delete category.');
+        ? 'This category cannot be found. It may have already been deleted.'
+        : 'Unable to delete category. Please try again later.');
 
     const error = new Error(message);
     error.status = status;

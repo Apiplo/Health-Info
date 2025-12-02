@@ -11,7 +11,7 @@ export const useAuth = () => {
   const context = useContext(AuthContext);
     // Throw an error if the hook is used outside of an AuthProvider
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('Authentication context is not available. Please ensure this component is wrapped within an AuthProvider.');
   }
   return context;
 };
@@ -20,7 +20,7 @@ const getInitialToken = () => {
   try {
     return localStorage.getItem('token') || null;
   } catch (error) {
-    console.error('Failed to read token from localStorage:', error);
+    console.error('Unable to access your authentication token. This may affect your ability to stay logged in.', error);
     return null;
   }
 };
@@ -30,7 +30,7 @@ const getInitialUser = () => {
     const storedUser = localStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
   } catch (error) {
-    console.error('Failed to parse user from localStorage:', error);
+    console.error('Unable to retrieve your user information. You may need to log in again.', error);
     return null;
   }
 };
@@ -56,7 +56,17 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let errorMessage = 'Login failed. Please check your credentials and try again.';
+        if (response.status === 401) {
+          errorMessage = 'Invalid email or password. Please try again or reset your password if you\'ve forgotten it.';
+        } else if (response.status === 403) {
+          errorMessage = 'Your account has been locked. Please contact support for assistance.';
+        } else if (response.status === 500) {
+          errorMessage = 'Server error occurred. Please try again later or contact support if the problem persists.';
+        } else if (response.status >= 400 && response.status < 500) {
+          errorMessage = 'Invalid request. Please check your information and try again.';
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -69,14 +79,14 @@ export const AuthProvider = ({ children }) => {
         try {
           localStorage.setItem('user', JSON.stringify(data.user));
         } catch (error) {
-          console.error('Failed to store user in localStorage:', error);
+          console.error('Unable to save your login information. You may need to log in again on your next visit.', error);
         }
       }
       setIsAuthenticated(true);
       setUser(data?.user || null);
       return data;
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Login attempt failed:', error);
       throw error;
     }
   };
@@ -94,8 +104,27 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        let errorMessage = 'Registration failed. Please try again.';
+        try {
+          const errorData = await response.json();
+          
+          if (response.status === 400) {
+            errorMessage = errorData.message || 'Please check all required fields and try again.';
+          } else if (response.status === 409) {
+            errorMessage = 'An account with this email already exists. Please use a different email or try logging in.';
+          } else if (response.status === 500) {
+            errorMessage = 'Server error occurred during registration. Please try again later.';
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (parseError) {
+          if (response.status === 400) {
+            errorMessage = 'Please check all required fields and try again.';
+          } else if (response.status === 409) {
+            errorMessage = 'An account with this email already exists.';
+          }
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -108,14 +137,14 @@ export const AuthProvider = ({ children }) => {
         try {
           localStorage.setItem('user', JSON.stringify(data.user));
         } catch (error) {
-          console.error('Failed to store user in localStorage:', error);
+          console.error('Unable to save your registration information. You may need to log in again on your next visit.', error);
         }
       }
       setIsAuthenticated(true);
       setUser(data?.user || null);
       return data;
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error('Registration attempt failed:', error);
       throw error;
     }
   };
@@ -129,7 +158,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     } catch (error) {
-      console.error('Failed to clear auth from localStorage:', error);
+      console.error('Unable to completely clear your login data. You may want to clear your browser cache for complete privacy.', error);
     }
   };
 

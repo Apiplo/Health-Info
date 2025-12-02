@@ -76,14 +76,14 @@ function validateTagForm(values, mode) {
 
   if (mode === 'create') {
     if (!rawCode) {
-      errors.code = 'Tag code is required.';
+      errors.code = 'Please provide a tag code (identifier).';
     } else if (!/^[a-z0-9-]+$/.test(rawCode)) {
-      errors.code = 'Use only small letters, numbers, and dashes. No spaces.';
+      errors.code = 'Tag code can only contain lowercase letters, numbers, and dashes. No spaces allowed.';
     }
   }
 
   if (!rawNameEn) {
-    errors.name_en = 'English name is required.';
+    errors.name_en = 'Please provide an English name for this tag.';
   }
 
   return errors;
@@ -113,7 +113,7 @@ export default function AdminTags() {
       const data = await fetchTags({ lang: currentLanguage || 'en' });
       setTags(Array.isArray(data) ? data : []);
     } catch (e) {
-      setListError(e.message || 'Failed to load tags.');
+      setListError(e.message || 'Unable to load tags. Please refresh the page and try again.');
     } finally {
       setLoadingList(false);
     }
@@ -215,8 +215,8 @@ export default function AdminTags() {
       const message = e && e.message
         ? e.message
         : mode === 'create'
-        ? 'Could not create tag. Please try again.'
-        : 'Could not update tag. Please try again.';
+        ? 'Unable to create tag. Please check your information and try again.'
+        : 'Unable to update tag. Please check your information and try again.';
       alert(message);
     } finally {
       setSaving(false);
@@ -238,7 +238,7 @@ export default function AdminTags() {
       setTags((prev) => prev.filter((t) => t.code !== tag.code));
     } catch (e) {
       const message =
-        (e && e.message) || 'Could not delete this tag. Please try again.';
+        (e && e.message) || 'Unable to delete this tag. Please try again later.';
       alert(message);
     } finally {
       setDeleteBusyCode('');

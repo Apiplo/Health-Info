@@ -28,7 +28,7 @@ export async function fetchTags({ lang = 'en' } = {}) {
     }
     const message =
       (errBody && (errBody.error || errBody.message)) ||
-      `Failed to fetch tags (${res.status})`;
+      `Unable to load tags. Please refresh the page and try again. (Error ${res.status})`;
     throw new Error(message);
   }
 
