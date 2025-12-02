@@ -2,7 +2,7 @@
 
 **Project:** Health-Info Website  
 **Framework:** React 18.2.0  
-**Last Updated:** November 10, 2025  
+**Last Updated:** December 1, 2025
 **Frontend Port:** 3001  
 **Backend API Port:** 3000  
 
@@ -71,7 +71,14 @@ Health-Info/
 │   ├── components/
 │   │   ├── Admin/
 │   │   │   ├── AdminHome.js
-│   │   │   └── AdminArticles.js
+│   │   │   ├── AdminArticles.js
+│   │   │   ├── AdminUsers.js
+│   │   │   ├── AdminTags.js
+│   │   │   ├── AdminCategories.js
+│   │   │   ├── AdminCategoryArticles.js
+│   │   │   ├── AdminHealth.js
+│   │   │   ├── AdminLayout.js
+│   │   │   └── AdminNav.js
 │   │   ├── ArticleDetail/
 │   │   │   ├── ArticleDetail.js
 │   │   │   └── ArticleDetail.css
@@ -109,7 +116,16 @@ Health-Info/
 │   │   ├── AuthContext.js
 │   │   └── LanguageContext.js
 │   ├── hooks/
-│   │   └── useTranslation.js
+│   │   ├── useTranslation.js
+│   │   └── useSearchSuggestions.js
+│   ├── services/
+│   │   ├── searchService.js
+│   │   ├── tagService.js
+│   │   ├── categoryService.js
+│   │   └── commentsService.js
+│   ├── data/
+│   │   ├── config.js
+│   │   └── mockData.js
 │   ├── App.js
 │   ├── index.js
 │   └── index.css
@@ -126,6 +142,7 @@ Health-Info/
 - **Registration:** New user sign-up
 - **Password Recovery:** Forgot password functionality
 - **Protected Routes:** Route guards for authenticated content
+- **Role-Based Access:** Admin, Editor, and Reader roles
 - **Token Management:** JWT token storage in localStorage
 
 ### 2. Multi-Language Support
@@ -135,13 +152,29 @@ Health-Info/
 - **Translation Hook:** Custom `useTranslation` hook for DOM element translation
 - **Context API:** `LanguageContext` for global language state
 
-### 3. Content Categories
+### 3. Content Management
 - **Health:** Health-related articles
 - **Technology:** Tech news and updates
 - **Sport:** Sports articles and news
 - **Most Popular:** Featured articles on homepage
+- **Tag System:** Comprehensive tagging for content organization
+- **Category Management:** Hierarchical content categorization
 
-### 4. Responsive Design
+### 4. Search Functionality
+- **Real-time Suggestions:** Debounced search with autocomplete
+- **Multi-type Search:** Search across articles, categories, and tags
+- **Language-aware:** Search results in current language
+- **Backend Integration:** Connected to search API endpoints
+
+### 5. Admin Panel
+- **Dashboard:** Overview with statistics and quick access
+- **User Management:** Complete CRUD operations for users
+- **Role Management:** Admin, Editor, Reader role assignments
+- **Content Management:** Article, category, and tag management
+- **Category Articles:** View articles by category
+- **Bilingual Support:** Manage content in both English and Bangla
+
+### 6. Responsive Design
 - **Mobile-First:** Optimized for mobile devices
 - **Breakpoints:**
   - Desktop: 1200px+
@@ -150,13 +183,14 @@ Health-Info/
 - **Mobile Menu:** Collapsible hamburger navigation
 - **Adaptive Layouts:** Flexible grid and flexbox layouts
 
-### 5. UI/UX Features
-- **Search Functionality:** Header search bar (UI ready)
+### 7. UI/UX Features
+- **Enhanced Search:** Header search with real-time suggestions
 - **Article Cards:** Clean card-based article display
 - **Image Handling:** Fallback images for missing content
 - **Loading States:** Loading indicators during data fetch
 - **Error Handling:** User-friendly error messages
 - **Footer:** Consistent footer across all pages
+- **Admin Interface:** Professional admin dashboard design
 
 ---
 
@@ -193,20 +227,21 @@ The frontend runs on port 3001 to avoid conflicts with the backend:
 - **Purpose:** Root component with routing configuration
 - **Key Features:**
   - Context providers (Auth, Language)
-  - Route definitions
+  - Route definitions including admin routes
   - Protected route wrapper
+  - Admin route wrapper with role-based access
   - Conditional header rendering (hidden on admin routes)
 
 #### 2. Header Component
 - **Location:** `src/components/Header/Header.js`
 - **Features:**
   - Navigation links (Health, Technology, Sport)
-  - Search toggle
+  - Search functionality with suggestions
   - Language toggle
   - Authentication buttons (Login/Logout/Sign Up)
   - Mobile hamburger menu
   - User state display
-- **Dependencies:** AuthContext, LanguageContext, useTranslation
+- **Dependencies:** AuthContext, LanguageContext, useTranslation, useSearchSuggestions
 
 #### 3. Home Component
 - **Location:** `src/components/Home/Home.js`
@@ -261,6 +296,73 @@ The frontend runs on port 3001 to avoid conflicts with the backend:
   - Consistent footer across pages
   - Links and information
   - Responsive design
+
+### Admin Components
+
+#### 9. AdminLayout Component
+- **Location:** `src/components/Admin/AdminLayout.js`
+- **Features:**
+  - Consistent admin layout wrapper
+  - Admin navigation sidebar
+  - Responsive design for admin interface
+
+#### 10. AdminHome Component
+- **Location:** `src/components/Admin/AdminHome.js`
+- **Features:**
+  - Admin dashboard with statistics
+  - Article counts by category
+  - Quick access cards to different admin sections
+  - Overview of system content
+
+#### 11. AdminUsers Component
+- **Location:** `src/components/Admin/AdminUsers.js`
+- **Features:**
+  - Complete user management system
+  - User creation, editing, deletion
+  - Role-based filtering (admin, editor, reader)
+  - User activation/deactivation
+  - Search functionality
+  - Tab-based interface for different user roles
+
+#### 12. AdminTags Component
+- **Location:** `src/components/Admin/AdminTags.js`
+- **Features:**
+  - Tag management with CRUD operations
+  - Bilingual tag support (English/Bangla)
+  - Tag code validation
+  - Search and filter functionality
+  - Link to view articles by tag
+
+#### 13. AdminCategories Component
+- **Location:** `src/components/Admin/AdminCategories.js`
+- **Features:**
+  - Category management with full CRUD operations
+  - Bilingual category support
+  - Category code generation
+  - Search functionality
+  - Link to view articles by category
+
+#### 14. AdminCategoryArticles Component
+- **Location:** `src/components/Admin/AdminCategoryArticles.js`
+- **Features:**
+  - View all articles within a specific category
+  - Language switching for category articles
+  - Article metadata display
+  - Navigation back to category management
+
+#### 15. AdminArticles Component
+- **Location:** `src/components/Admin/AdminArticles.js`
+- **Features:**
+  - Article management interface
+  - Article creation and editing
+  - Category and tag assignment
+  - Bilingual content management
+
+#### 16. AdminHealth Component
+- **Location:** `src/components/Admin/AdminHealth.js`
+- **Features:**
+  - Health-specific article management
+  - Category-focused content administration
 
 ---
 
@@ -324,6 +426,22 @@ const elementRef = useTranslation();
 return <div ref={elementRef}>Content to translate</div>
 ```
 
+#### useSearchSuggestions Hook
+**Location:** `src/hooks/useSearchSuggestions.js`
+
+**Purpose:** Provides debounced search suggestions from backend
+
+**Features:**
+- Debounced API calls (250ms delay)
+- Language-aware suggestions
+- Loading states management
+- Automatic cancellation on component unmount
+
+**Usage:**
+```javascript
+const { suggestions, loading } = useSearchSuggestions(query);
+```
+
 ---
 
 ## API Integration
@@ -342,7 +460,7 @@ Body: { email, password }
 Response: { token, user }
 
 POST /api/auth/register
-Body: { email, password, name }
+Body: { email, password, displayName }
 Response: { token, user }
 ```
 
@@ -357,6 +475,75 @@ Response: Article
 
 GET /api/articles/category/:category
 Response: Article[]
+```
+
+#### Search
+```
+GET /api/search/suggestions?q=<query>&lang=<lang>&limit=<limit>&perTypeLimit=<perTypeLimit>&types=<types>
+Response: { suggestions: Array }
+```
+
+#### Categories
+```
+GET /api/categories?lang=<lang>
+Response: Category[]
+
+GET /api/categories/:id
+Response: Category
+
+GET /api/categories/:id/articles?lang=<lang>
+Response: Article[]
+
+POST /api/categories
+Body: { name_en, name_bn }
+Headers: { Authorization: Bearer <token> }
+Response: Category
+
+PUT /api/categories/:id
+Body: { name_en, name_bn }
+Headers: { Authorization: Bearer <token> }
+Response: Category
+
+DELETE /api/categories/:id
+Headers: { Authorization: Bearer <token> }
+```
+
+#### Tags
+```
+GET /api/tags?lang=<lang>
+Response: Tag[]
+
+POST /api/tags
+Body: { code, name_en, name_bn }
+Headers: { Authorization: Bearer <token> }
+Response: Tag
+
+PUT /api/tags/:code
+Body: { name_en, name_bn }
+Headers: { Authorization: Bearer <token> }
+Response: Tag
+
+DELETE /api/tags/:code
+Headers: { Authorization: Bearer <token> }
+```
+
+#### Users (Admin)
+```
+GET /api/users
+Headers: { Authorization: Bearer <token> }
+Response: User[]
+
+PUT /api/users/:id
+Body: { displayName, email, role }
+Headers: { Authorization: Bearer <token> }
+Response: User
+
+PUT /api/users/:id/activate
+Body: { isActive: boolean }
+Headers: { Authorization: Bearer <token> }
+
+DELETE /api/users/:id
+Headers: { Authorization: Bearer <token> }
 ```
 
 #### Comments
@@ -564,8 +751,9 @@ Creates optimized production build in `build/` folder:
    - Some UI elements marked with `data-no-translate` attribute
 
 7. **Search Functionality:**
-   - Search UI is present but not connected to backend
-   - Search endpoint needs to be implemented
+   - Search functionality is now implemented with suggestions
+   - Search suggestions API is connected but may need backend optimization
+   - Search results display needs refinement
 
 8. **Image Handling:**
    - Relies on backend to serve images
@@ -576,6 +764,16 @@ Creates optimized production build in `build/` folder:
    - Token stored in localStorage (consider security implications)
    - No token refresh mechanism implemented
    - Session persistence across page reloads
+
+10. **Admin Panel Performance:**
+    - Large user lists may cause performance issues
+    - Pagination not implemented for admin data tables
+    - Search functionality may be slow with large datasets
+
+11. **Category and Tag Management:**
+    - No bulk operations for categories and tags
+    - Category deletion may leave orphaned articles
+    - Tag deletion removes associations but may need cleanup
 
 ### Browser Compatibility
 - Modern browsers (Chrome, Firefox, Safari, Edge)
@@ -608,12 +806,13 @@ Creates optimized production build in `build/` folder:
    - Implement service worker for offline support
 
 4. **Enhanced Features:**
-   - Real-time search with debouncing
-   - Article bookmarking
-   - User profile management
-   - Social media integration
+   - Enhanced search with advanced filtering and sorting
+   - Article bookmarking and favorites
+   - User profile management with avatars
+   - Social media integration and sharing
    - Comment reactions (likes, replies)
-   - Article sharing functionality
+   - Article sharing functionality with rich previews
+   - Reading history and recommendations
 
 5. **Security Enhancements:**
    - Implement token refresh mechanism
@@ -642,11 +841,14 @@ Creates optimized production build in `build/` folder:
    - Date/time localization
 
 9. **Admin Features:**
-   - Complete admin dashboard
+   - Enhanced admin dashboard with real-time statistics
    - Simultaneous English and Bangla article upload
-   - Improved article CRUD operations
-   - User management
-   - Analytics and reporting
+   - Improved article CRUD operations with bulk actions
+   - Advanced user management with permissions
+   - Analytics and reporting with charts
+   - Content scheduling and publishing workflow
+   - Audit logs for admin actions
+   - Import/export functionality for content
 
 ---
 
@@ -773,9 +975,10 @@ useEffect(() => {
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | 1.0.0 | Nov 2025 | Initial handover document | [Your Name] |
+| 1.1.0 | Dec 2025 | Added search functionality, admin panel enhancements, and new API endpoints | [Your Name] |
 
 ---
 
-**Last Updated:** November 10, 2025  
-**Document Version:** 1.0.0  
-**Status:** Ready for Handover
+**Last Updated:** December 1, 2025
+**Document Version:** 1.1.0
+**Status:** Updated with New Features
